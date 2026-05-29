@@ -179,9 +179,7 @@ export default function ProductDetail() {
   const product = productList.find((item) => item.slug === slug)
   const [added, setAdded] = useState(false)
   const infoLines = product ? parseLines(product.info) : []
-  const usageLines = product ? parseLines(product.usage) : []
   const imageFiles = product ? parseImageFiles(product.images) : []
-  const ingredients = product ? parseIngredients(product.ingredients) : { type: 'empty' as const, list: [], blocks: [] }
   const descriptionParas = product ? parseParagraphs(product.description) : []
   const skinTags = product ? product.skinType.split(',').map((item) => item.trim()).filter(Boolean) : []
   const volume = parseVolume(infoLines)
