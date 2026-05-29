@@ -5,7 +5,7 @@ import ScrollToTop from '../components/ScrollToTop'
 
 export default function MainLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-bone">
+    <div className="min-h-screen flex flex-col bg-background">
       <ScrollToTop />
       <Nav />
       <main className="flex-1">

@@ -1,111 +1,172 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import Logo from './Logo'
 
-const links = [
-  { to: '/collection', label: 'Collection' },
-  { to: '/rituals', label: 'Rituals' },
-  { to: '/journal', label: 'Journal' },
-  { to: '/about', label: 'Atelier' },
+const navLinks = [
+  {
+    to: '/collection',
+    label: 'Sản phẩm',
+    withChevron: true,
+    children: [
+      { to: '/collection?cat=my-pham-tre-hoa', label: 'Mỹ phẩm trẻ hoá' },
+      { to: '/collection?cat=chong-lao-hoa', label: 'Chống lão hoá' },
+      { to: '/collection?cat=kem-chong-nang', label: 'Kem chống nắng' },
+      { to: '/collection?cat=essence', label: 'Essence' },
+      { to: '/collection?cat=kem-duong-da', label: 'Kem Dưỡng Da' },
+    ],
+  },
+  {
+    to: '/brand',
+    label: 'Thương hiệu',
+    withChevron: true,
+    children: [
+      { to: '/brand?name=le-laffe', label: 'Le Laffé' },
+      { to: '/brand?name=shoo', label: 'Shoo (upcomming)' },
+    ],
+  },
+  { to: '/journal', label: 'Blog' },
+  {
+    to: '/about',
+    label: 'Về chúng tôi',
+    withChevron: true,
+    children: [
+      { to: '/about', label: 'IMPERIAL Skin Care' },
+      { to: '/about#brands', label: 'Hệ thống thương hiệu' },
+      { to: '/stores', label: 'Hệ thống cửa hàng' },
+      { to: '/about#experience', label: 'Trải nghiệm khách hàng' },
+    ],
+  },
 ]
 
 export default function Nav() {
-  const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 12)
-    handler()
-    window.addEventListener('scroll', handler, { passive: true })
-    return () => window.removeEventListener('scroll', handler)
-  }, [])
 
   useEffect(() => {
     setOpen(false)
   }, [pathname])
 
-  // Home page has a dark mobile hero → nav uses bone tone on mobile before scroll.
-  const onHome = pathname === '/'
-  const mobileBone = onHome && !scrolled
-
-  const iconTone = mobileBone ? 'text-bone/90 md:text-ink/70' : 'text-ink/70'
-  const burgerBar = mobileBone ? 'bg-bone md:bg-ink' : 'bg-ink'
-
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? 'glass py-4' : 'py-6 bg-transparent'
-      }`}
-    >
-      <div className="container-wide flex items-center justify-between">
-        <Link to="/" aria-label="IMPERIAL Skin Care home">
-          <Logo tone={mobileBone ? 'mobileBone' : 'ink'} />
-        </Link>
-
-        <nav className="hidden md:flex items-center gap-10">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                `text-[0.78rem] uppercase tracking-[0.22em] font-medium transition-colors duration-300 ${
-                  isActive ? 'text-primary' : 'text-ink/80 hover:text-ink'
-                }`
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="hidden md:flex items-center gap-6">
-          <button aria-label="Search" className="text-ink/70 hover:text-ink transition-colors">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <circle cx="11" cy="11" r="7" />
-              <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
-            </svg>
-          </button>
-          <Link
-            to="/bespoke"
-            className="text-[0.78rem] uppercase tracking-[0.22em] font-medium text-ink/80 hover:text-ink"
-          >
-            Bespoke
-          </Link>
-          <button aria-label="Cart" className="relative text-ink/70 hover:text-ink transition-colors">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
-              <path d="M6 7h12l-1 13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7z" strokeLinejoin="round" />
-              <path d="M9 7a3 3 0 0 1 6 0" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
-
-        <button
-          onClick={() => setOpen((o) => !o)}
-          className={`md:hidden flex flex-col gap-1.5 p-1 ${iconTone}`}
-          aria-label="Menu"
-        >
-          <span className={`h-px w-6 transition-transform ${burgerBar} ${open ? 'translate-y-[7px] rotate-45' : ''}`} />
-          <span className={`h-px w-6 transition-opacity ${burgerBar} ${open ? 'opacity-0' : ''}`} />
-          <span className={`h-px w-6 transition-transform ${burgerBar} ${open ? '-translate-y-[7px] -rotate-45' : ''}`} />
-        </button>
+    <div className="sticky top-0 z-50">
+      <div className="bg-ink text-bone py-2 text-center">
+        <p className="text-[0.68rem] uppercase tracking-[0.2em] font-medium">
+          Miễn phí giao hàng cho đơn hàng từ 1.500.000 VNĐ trở lên
+        </p>
       </div>
 
-      {open && (
-        <div className="md:hidden glass border-t border-outline-variant/20 mt-4">
-          <div className="container-editorial py-8 flex flex-col gap-6">
-            {links.map((link) => (
-              <NavLink key={link.to} to={link.to} className="font-serif text-2xl tracking-tight">
-                {link.label}
-              </NavLink>
-            ))}
-            <Link to="/bespoke" className="font-serif text-2xl tracking-tight">
-              Bespoke Consultation
-            </Link>
+      <header className="bg-surface border-b border-outline-variant">
+        <nav className="container-wide py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 flex justify-start">
+              <Link to="/" aria-label="IMPERIAL Skin Care home" className="flex items-center">
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtx8Tj9XFuAIxxbtQt-WlTECXBYosGkV8OLe3IMXa8nzKZCX1R7QQbkEHHve47qjgI4v7EBwbO5Ju2-DjaO3-fswugkJ2ZJGb21N_xBaUEHPe4hIi0Ms8N5c8oOCIvCxnxsqNYWA8-eD_uUEc6ffyzybONx-bvsI2EJL01PNz5Yx_mqGM2jC-wVdfWto3e6wTJFa_HSSt9ZAcxrmeS1eXkW23ik5Nl-ROAVCjuBC_CAYq79cNwDxSWs51LHqoKJ9CZyNSCCWtn0SU"
+                  alt="IMPERIAL SKINCARE"
+                  className="h-12 w-auto object-contain"
+                />
+              </Link>
+            </div>
+
+            <div className="hidden md:flex items-center justify-center gap-8 flex-1 whitespace-nowrap">
+              {navLinks.map((link) => (
+                <div key={link.to} className="relative group">
+                  <NavLink
+                    to={link.to}
+                    className={({ isActive }) =>
+                      `flex items-center gap-1 text-[0.86rem] normal-case tracking-[0.08em] font-medium transition-colors whitespace-nowrap ${
+                        isActive ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+                      }`
+                    }
+                  >
+                    {link.label}
+                    {link.withChevron && (
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      >
+                        <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </NavLink>
+                  {link.children && (
+                    <div className="absolute left-0 top-full pt-4 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity">
+                      <div className="bg-surface border border-outline-variant/60 shadow-[0_18px_40px_rgba(0,0,0,0.06)] min-w-[240px]">
+                        {link.children.map((child) => (
+                          <NavLink
+                            key={child.to}
+                            to={child.to}
+                            className="block px-5 py-3 text-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors"
+                          >
+                            {child.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-5 flex-1 text-ink/80">
+              <button aria-label="Search" className="hover:text-primary transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+                </svg>
+              </button>
+              <button aria-label="Cart" className="hover:text-primary transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M6 7h12l-1 13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7z" strokeLinejoin="round" />
+                  <path d="M9 7a3 3 0 0 1 6 0" strokeLinecap="round" />
+                </svg>
+              </button>
+              <button aria-label="Account" className="hover:text-primary transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c1.8-3.3 5-5 8-5s6.2 1.7 8 5" strokeLinecap="round" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => setOpen((o) => !o)}
+                className="md:hidden flex flex-col gap-1.5 p-1 text-ink"
+                aria-label="Menu"
+              >
+                <span className={`h-px w-6 bg-ink transition-transform ${open ? 'translate-y-[7px] rotate-45' : ''}`} />
+                <span className={`h-px w-6 bg-ink transition-opacity ${open ? 'opacity-0' : ''}`} />
+                <span className={`h-px w-6 bg-ink transition-transform ${open ? '-translate-y-[7px] -rotate-45' : ''}`} />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </header>
+
+          {open && (
+            <div className="md:hidden border-t border-outline-variant mt-4">
+              <div className="py-6 flex flex-col gap-5">
+                {navLinks.map((link) => (
+                  <div key={link.to} className="flex flex-col gap-3">
+                    <NavLink to={link.to} className="text-lg font-serif">
+                      {link.label}
+                    </NavLink>
+                    {link.children && (
+                      <div className="pl-4 flex flex-col gap-2">
+                        {link.children.map((child) => (
+                          <NavLink key={child.to} to={child.to} className="text-sm text-on-surface-variant">
+                            {child.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </nav>
+      </header>
+    </div>
   )
 }
 
