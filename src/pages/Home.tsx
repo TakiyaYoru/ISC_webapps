@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const heroImages = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCYH8CJmRZUlnyYSmSc8zzgHwU_uqIFZ4As2_kDAgVHGv7x7SCudRAYoatZJEh0ldiIJSEaM0MGxZA9E-sJyjfaVgjXwsbhGnZCyna0B0pIUi4G4k4IxO5vDgJZWVLXtierf8X0_r8bwtZuJ_vsr030vEBLVwRgvVBPYx8QtvPo7wzzTOcCIM5VMcy4ihWAbx25PU0CB3VUydg5xuym4RWOMsz_IpzwHWnb1KWhZheATJTxOt8r0EDedAMtufRUK1GF8NyMYZ8IBDY',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDrh1Me8BUXL_tyHWFFemGI_PN5MD-E7ynzJtuBuSPrtpGfaS21zegeNu53qa8wdFNmNLKvAS0QewBeszVHUU-WW6r_cu8L9CYJLq68hpzEMZA9xDKbXfSySMkCKyWOyARksDZoENxpt1v_mW3ispk-Leq-UjZ7IdHCHfd-jTvUCl1mNq947kfwvDX59L-mkaaQIQjJYs2Zevgy7unb8Ar4oV174wvF-iwZqnLllJSZe7QIfl8mbo2UwWyt8mFs_Vmw9IzoeZBE5uI',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuC5DUJud7sG1mWTj7hHBC0cTJCRCmg6o6D_uIC1iswqOAXJ0NpcQteTE9u1XIo69z1EqlOHwlU2vmoEaPl8RtF68yIZHJdncV9rXzcnGeg2ufZlkYBfqoQdyBF9benBsOBG78e6uAx2UYgbmzVbu5fxcax79XfTQoVePiL8uZtcGFCSKshOtWYH8rkoCKROST61L7xqX25o7tPD1Xlr96nbxvipJjuJGdMam4G_ZW38ZmC8bcFf_vTwP5FcNF2BHb0sZ04dQsjOBNY',
+  'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_001.png',
+  'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_002.png',
+  'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_003.png',
 ]
 
 const bestSellers = [
@@ -50,18 +50,6 @@ const bestSellers = [
   },
 ]
 
-const instagramGrid = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDsQZ48XCeGL2Hmm1m4LsH--mSiRJIEfr4xG0ACjuoJKQzsSbqoHbqenv8xKfeVy83b2BMbqkWXLH5nm0lh-RbZgnuTRt42L4yKl4iGsbTzZbRsNlWrZe2IUz5KqSEIpLGBHnrOxOiNcVi-05GKKtojMXFNYLj2h4FvXb2E0W_tK4Xpp4C2HGq0X_edMC5qsjyb8i8hF59qpmvuxhDmCvU8dy7buUssXlooAnTwPrcNZrwsG2iVjIozQewLx-o8A_0eu9V1Cri1m8w',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAQOuFyR1WJGf35Yl4yg2OpzRdIL0n9BXKD2tQbIYHrOVA7Fk8flbG1ToxYgU2zsc6mY8TeOusPNw4pnmhSyzI3ddlJngIKOEKeucDQwUMK_xfT-T0b1SD-6WXJ_tt1Q-rvZbXuri0rEKF-oNElae9BVcWPhXaCeoKt-P59MpY3CxI8AKExLH_7jD1Q9UEPCM8Ilik-rjJfvCnSrge-15mfbepa04buVniULETKWCH0CSHt4M_UcjfR7CKY52Ev-m7jhUmaAuSMJb4',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDNiZRWJfHRGTVDWV0_xCFLDer5APcI_4CpyelCf4Uk-A6CCNxy36E-f0Uax4vD4ZQHY2KgeC-vGfwXuwq7x_-4Fzh75mshavQs5hpb6evVmtBqrtvYTmRkMim604yqfZrB2cp2jzaRzFmC2pfiwz1I4kxl3BmMX40K83rnWj2yB4UYZrst1eZ8CytERrot-G94rSqG65JYBbM31mzBzzDnxrqMQFZ_YVzhCpsU0fEcyUpVTK8wMUX196DYrSnvNbOX16gFeSu0Rjw',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDXEovyxc_Fs1moYDlrqJhyfkk6yhkrTJLSE19e9W2t2yQOq3LUxI8egSpTXw_kf-RT555SKR1mTEh1AB_IhzNrKR95OaHP4wTyeqytf1qkJQaXGCpAzAitzbidXLTihfr3RiUp5nfoxtKU7cMqFc-aHCUEZxjKeMsTbu8Kjuc_TfMQJV9eN_sJ-YM_sR00yxV9Hkz3pTE0rhL3WuPU6MikyWzSp9JqynKUA2YcdkhN0fFV6U79z5PScOR7C-lpL3py7b6nxeZVzZM',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBrtm89bAtt80XNi9lHiUzHbaJLlxIAXHMwRogyAeSPKq-5YvNvaUg8mKGwODTVmXWR0k7hUNWBsh7r90G5jpcpVZ0NgH6x9J616Lfn9UlNANZBZEco2Tqpt8uq5X2olwaDAN81Xo7Zm7NPXPYHqgDAm3cx5Tz8aHYkDaW7mzA9i3-KjKLqR69U7kANB4Lc2yZBBQiyQ440Z2JsmNC2kH5WY72vV0VilSt9vUdNg0pvw6rkQ3ktsNf69ho6UqtEAgjCBzqQ3dq1YCg',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDZqBaTS3E1oFQN2Cm2xC1TJEJoiXeT9RG9_vdZ9v6Q3Rxge8Kefhtgo4Vm2bBfnA_WT1zQNRfBDdLGTOtS5VUr5aVnyG4J2jQAam2dEMWDIky3YgcXY6B48bPFfcr0rhuSuOfTKFUcKEw7mL6uRcZLEcggpY9wm0p_MdqLwQ-o6lbnDk8G8Q6axLTJIhV-rM4X0yXt2zgueVB2-Ubr76n_UrS4234GQEY9r3xI1r78cVl7BdxYJXkaK39fNNOUzxCAs0QfMYYs3R8',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuDc7yCUHtzv01mcZbhAYWXaCh0xxVwT7Yg8H8AWjR43XOXwxPNxaFbH-rJVhKmQbMRrJdTGMz-M73efjYwoESqT225NFLucCrskcCpVkgRnc4EMWeL8tI5sf0b0BKuII1uemNsuONhX-eblflbUhlU1xDPjGlMMppWBF-w5JmvWREPxnAjd1L_kRqJD4YprrdYZs-bYo8TJZxIQrwP5N6DAU-41YOpnWnU6idK7xyzpNZXWytpNm_Ebc5HZIQyscKelZQokvS9ZFv0',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAYxt_sChuuLcGLncyk8dBQbnRXc7lJ7CskdSEMvKCqOQG31Txrkx16qOJY-3K1WkJnPq8R7d-CelWO_Hvs2xgEgAnDPBTAl1iBniBdAA7eawALZ7LJl7aKVDKT4lb-RUWWL9Js-ywujq_8S7KMLn6x_1gJ0ta2N5hT52KdsyPLMw-NSoq8ti5ZTGVh_0xe7UALWwfkaV4Sjk_6DV1zTHphog4bOuZdqLUzqO5WlYYZWwpkkj5H5dJghetVcatTtqpHi1seKkMahoc',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCAxqaynvOt1R0Ya1_QszHFS1XzlKyQrBRSafsWmkIpD3NpiVVphrrmddurx_78FSXj6er0CFJ-jQyX98OiJV8mD83zRuhUi_iaJtUkT9VmFLUgglKID51KCMANaNAIc5sxIuhfxY__ToDAxHsQfCvwDhgJDbX-gHS_upWB1DRW_9rX0uoBuzsqO6IZwkpoml9PtNs8b2m-Xv8WqTp-IiCunbN0kt1Wp1eO0oaAXuTrmX3CYqFyC-TkTo95hIiDW2Bg_CAfhunDdwI',
-]
-
 const blogArticles = [
   {
     category: 'KIẾN THỨC',
@@ -92,6 +80,16 @@ export default function Home() {
       setCurrentHero((prev) => (prev + 1) % heroImages.length)
     }, 4000)
     return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const scriptSrc = 'https://elfsightcdn.com/platform.js'
+    if (document.querySelector(`script[src="${scriptSrc}"]`)) return
+
+    const script = document.createElement('script')
+    script.src = scriptSrc
+    script.async = true
+    document.body.appendChild(script)
   }, [])
 
   return (
@@ -197,7 +195,7 @@ export default function Home() {
         <img
           alt="Giải pháp đảo ngược dấu hiệu lão hóa"
           className="w-full h-auto object-cover block"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMS4XoOm6EOZf-wB1TJhTz-GnWOA3tXQ8dgqsYj4lvacoQqhswGGZP6l-QRgJOGjNgsQ1tRI_h5BIFHChBLNWSrH0nKR_18Hk-n6-x9eJCSFc4H7CBblgLjR8fdOTBSwDKy01MO-irB8c38yl8ZgoeNY88xSITuFHQ2MMXsLn_I2V_am1PQjoH0RMkrzX_cl6XjRVuqmCV0xavFjluuTRYmTDxltpAPmXh-jj8-7kyQN_HAclP3kkEaRSeluDtzRhjQ4-_D2h07BM"
+          src="https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Section_001.png"
         />
       </section>
 
@@ -207,28 +205,20 @@ export default function Home() {
             <h2 className="font-headline-lg text-primary text-[32px] md:text-[40px] italic">@imperialskincare</h2>
             <a
               className="px-6 py-3 border border-outline-variant hover:border-primary transition-colors flex items-center gap-2 font-label-caps text-[12px] tracking-widest text-primary bg-white"
-              href="#"
+              href="https://www.instagram.com/imperialskincare/"
+              target="_blank"
+              rel="noreferrer"
             >
-              THEO DÕI INSTAGRAM IMPERIAL <span className="text-[16px]">📷</span>
+              THEO DÕI INSTAGRAM IMPERIAL SKINCARE <span className="text-[16px]"></span>
             </a>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-1 h-[400px] lg:h-auto bg-white border border-secondary/10 relative overflow-hidden flex items-center justify-center group">
-              <div className="absolute inset-0 bg-primary/40 transition-colors z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 duration-300">
-                <span className="text-white text-[32px]">♥</span>
-              </div>
-              <img alt="Imperial Skincare Collection" className="w-full h-full object-cover" src={instagramGrid[0]} />
-            </div>
-            <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {instagramGrid.slice(1).map((img, i) => (
-                <div key={img + i} className="aspect-square bg-white border border-secondary/10 relative group overflow-hidden flex items-center justify-center">
-                  <div className="absolute inset-0 bg-primary/40 transition-colors z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 duration-300">
-                    <span className="text-white text-[32px]">♥</span>
-                  </div>
-                  <img className="w-full h-full object-cover" src={img} alt="Instagram" />
-                </div>
-              ))}
-            </div>
+
+          <div className="relative w-full overflow-hidden pb-10">
+            <div className="elfsight-app-11d76882-8cf7-4750-9293-fe8b97970904" data-elfsight-app-lazy />
+            <div
+              className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-12 bg-surface"
+              aria-hidden="true"
+            />
           </div>
         </div>
       </section>
