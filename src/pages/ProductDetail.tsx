@@ -155,16 +155,6 @@ const parseImageFiles = (value: string) =>
     return parts.length > 1 ? parts.slice(1).join(':').trim() : line
   })
 
-const parseIngredients = (value: string) => {
-  if (!value.trim()) return { type: 'empty' as const, list: [], blocks: [] }
-  const blocks = value.split(/\n\n+/).map((item) => item.trim()).filter(Boolean)
-  if (blocks.length > 1) {
-    return { type: 'blocks' as const, list: [], blocks }
-  }
-  const list = value.split(',').map((item) => item.trim()).filter(Boolean)
-  return { type: 'list' as const, list, blocks: [] }
-}
-
 const parsePrice = (price: string) => `${price} VNĐ`
 
 const parseVolume = (infoLines: string[]) => {
