@@ -1,10 +1,46 @@
 import { Link } from 'react-router-dom'
 
 const highlights = [
-  { title: 'Yêu cầu trong 48 giờ', description: 'Kể từ thời điểm nhận hàng thành công.', icon: '⏱️' },
-  { title: 'Cần video mở hộp', description: 'Quay liền mạch, rõ mã vận đơn và tình trạng kiện hàng.', icon: '🎥' },
-  { title: 'Xác minh 24–72 giờ', description: 'Đội ngũ CSKH sẽ kiểm tra và phản hồi qua email/zalo.', icon: '✅' },
-  { title: 'Hoàn tiền 5–10 ngày', description: 'Kể từ khi xưởng nhận lại và xác nhận sản phẩm lỗi.', icon: '💳' },
+  {
+    title: 'Yêu cầu trong 48 giờ',
+    description: 'Kể từ thời điểm nhận hàng thành công.',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Cần video mở hộp',
+    description: 'Quay liền mạch, rõ mã vận đơn và tình trạng kiện hàng.',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+        <path d="M23 7l-7 5 7 5V7z" />
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Xác minh 24–72 giờ',
+    description: 'Đội ngũ CSKH sẽ kiểm tra và phản hồi qua email/zalo.',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Hoàn tiền 5–10 ngày',
+    description: 'Kể từ khi xưởng nhận lại và xác nhận sản phẩm lỗi.',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+      </svg>
+    ),
+  },
 ]
 
 export default function PolicyReturns() {
@@ -33,10 +69,10 @@ export default function PolicyReturns() {
       <section className="container-wide mb-section-gap">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
           {highlights.map((item) => (
-            <div key={item.title} className="border border-outline-variant p-8 flex flex-col items-center text-center bg-surface-container-lowest">
-              <span className="text-3xl mb-4">{item.icon}</span>
-              <h3 className="font-label-caps text-label-caps uppercase text-primary mb-2">{item.title}</h3>
-              <p className="font-body-md text-body-md text-on-surface-variant text-sm">{item.description}</p>
+            <div key={item.title} className="border border-outline-variant/60 p-8 flex flex-col items-center text-center bg-surface-container-lowest hover:border-primary transition-all duration-300">
+              {item.icon}
+              <h3 className="font-label-caps text-label-caps uppercase text-primary mb-3">{item.title}</h3>
+              <p className="font-body-md text-body-md text-on-surface-variant/80 text-sm leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>
@@ -99,11 +135,11 @@ export default function PolicyReturns() {
                 ['Xử lý hoàn tất', 'Gửi sản phẩm thay thế hoặc tiến hành hoàn tiền qua tài khoản.'],
               ].map(([title, desc], index) => (
                 <div key={title} className="flex flex-col items-center text-center px-4">
-                  <div className="w-12 h-12 bg-surface border border-primary rounded-full flex items-center justify-center mb-6 text-primary font-headline-md shadow-sm">
+                  <div className="w-10 h-10 border border-secondary text-secondary bg-secondary/5 rounded-full flex items-center justify-center mb-6 font-serif text-lg shadow-sm">
                     {index + 1}
                   </div>
                   <h4 className="font-label-caps text-label-caps uppercase text-primary mb-3 tracking-widest">{title}</h4>
-                  <p className="font-body-md text-body-md text-on-surface-variant text-sm leading-relaxed max-w-[240px]">{desc}</p>
+                  <p className="font-body-md text-body-md text-on-surface-variant/80 text-sm leading-relaxed max-w-[240px]">{desc}</p>
                 </div>
               ))}
             </div>

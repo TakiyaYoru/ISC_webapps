@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 import ScrollToTop from '../components/ScrollToTop'
+import CartDrawer from '../components/CartDrawer'
 
 export default function MainLayout() {
   return (
@@ -12,6 +13,7 @@ export default function MainLayout() {
         <Outlet />
       </main>
       <Footer />
+      <CartDrawer />
     </div>
   )
 }

@@ -7,21 +7,21 @@ const products = [
     name: 'Zayin Rare Elements Vital Facial Essence',
     type: 'Essence · 50ml',
     price: '7.400.000 VNĐ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC7eJc6_0gqyXNGd8xqJIK_l4RnTWCLrD0ooZi1AaOCNsKrMUoLq600CB5F2g7QmWqr-xtjxN3mX2JKfZH_ZrC8c8W8otHDYSE5HXjHFZTmp_gsDFgwDHg9lkVZRy345tKgJuWD7D3uUPtmkzXI8LjYkttakCdHvF1oCYuPwXC3x1qZkuH3KpSJRxKaOZ6bpa4YAnW72VCjho_KwuuY_j8hr0OkFKeDeP2QeUfivSe9CwvNk9FAIHsk0hOTWzo4XzKK5lEnygf-jmg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_001.jpg',
   },
   {
     slug: 'chet-energy-restoration-facial-treatment',
     name: 'Chet Energy Restoration Facial Treatment',
     type: 'Treatment · 50ml',
     price: '7.000.000 VNĐ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCfMwRWsYS805o8jj19KszixOzu-bzVzJ9OTuPjVqP0_aYwhsb8IQUBTS2fMoLtp_fgw9neSWjBMmb-tap4xMCsxfNyrnBjveTNVKZZ-yZez-Uvkvp2IyCMzRZteQfSGhYf6fKkXFTivYLCzdaT3Cfll_1Z-ViaZMzp2vCAj97mrNakl5215sn2ACHqZ_SCdN65gQyl4grnosr6n-La60Gyck_Xvgk0XouYAxvGfBRYdsKbMI3BYAg0_7BYkm3KqBylG_QhpdmBMEo',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_001.jpg',
   },
   {
     slug: 'smtrs-100-de-secret',
     name: 'SMTRs-100 De Secret',
     type: 'Concentrate · 10ml',
     price: '6.300.000 VNĐ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB21AEUKG6hjM4YjeCIm8Y3996kemCFPhLqNzu5pTixvQSEgrj_ecxsqa34PpjcEDmW-SlI8VbmXCF3YqxUMOHXjYvwLBKoAF8K3CI9s0rCDLykF1QMq2enf7rOM27y1Ho8OqLMMFbDlZ_sBG0c4GqeoiYmAbYRuTir2yywq1ckvAMRet8q0kfxplWCIq0Ob_-IBDw4_8g7CObtDsE80AkwYU9Crb368m_6d9Zh6MncVYJCTqXD4ryASMeadTrITRWrx67m_rOyjHg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_001.jpg',
     tag: 'Mới',
   },
   {
@@ -29,28 +29,28 @@ const products = [
     name: '500,000 Stem Media Skin Booster',
     type: 'Skin Booster · 30ml',
     price: '11.200.000 VNĐ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDHmjcQPHaUrDN9jcQHX2Rnnw9aSyh4oNKjRrkoFzvZGONQS_Aj_ZP8FGtpSCBB6uaY977OO8oABmcqoNS3gffajI5qmXm-dncnVOMbcbVaEiUGjSxVJRKEto9M7wjt-hh56qvwOHMO-Ei1hHrMwuPcR_3gQ_6yHYaxglTuudoyUT-vl_PfrKKn1Ptw4t3tfKzKKoPdDW4m-VWklwrYIhDQW5XqwOZJvZ8lQSx79I7V7LjKzRji8Mz7tPZFljNHyI7WvOhhymZJnSg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_001.jpg',
   },
   {
     slug: 'alpeh-mito-viv-first-treatment-essence',
     name: 'Alpeh / Mito-viv First Treatment Essence',
     type: 'Essence · 100ml',
     price: '6.700.000 VNĐ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA5RSeMd5UG_ooKumvprkn7nl8ivb_pfS5MvCLdDhrwElNCHLZf5gD3wzZWnpfbKGv27O-_9jh9NetEZD2EUQtENB1vIJLQ4C-zrbJxTN7cGPzN74aLtg7OAVqj9NsJwwD6Rq4zTJcj6GvXjj5qhh21lVUQUeym1q8p-n43DXp6-AGFtRstY1H6-ICkTfSOvo7yEJMLFGtUqO3Kd2CEUwPxn6QCB6S-x7A3zuWOA5kima_NErn3LthVOKM6grQ44cS1MqHuOk50FBk',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_001.jpg',
   },
   {
     slug: 'comprehensive-skincare-solution-quintet',
     name: 'Comprehensive Skincare Solution Quintet',
     type: 'Gift Set',
     price: '5.000.000 VNĐ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAg1uHSgzsuJXG9o80KaffRF_OteJwJO7vdw7CZGMyQQ5k9yifTE8_o0aUmOSpudKv-4UiKCBLAILeHzkWGVLcR_xcPU3ZcEy0JE2xHcNe2BsQKKucb9TQjCvZ9wzJUmyMaL3OIdqgEEvxwL3uBgrlbno-pOc0SwbQKDxB-RxNk8AQL_4NdZCPOLAChlcEVRsYbUI-FE_0zzNAy3izN_shZRZdlaLw05NhOJCIh-a3dz1k30F42WECFyOys6YErdSmYZWrr9MQ3eaA',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Comprehensive/quintet_001.jpg',
   },
   {
     slug: 'platinum-stemcell-reverse-aging-solution',
     name: 'Platinum StemCell Reverse-Aging Solution',
     type: 'Set full size',
     price: '31.000.000 VNĐ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC8-Ca8Z1L-JRupGJtApBOQ9pRJuwjloQyd9mCYo_uGk7f5UGYKf1a7a8r9H5cqnlD0c1t8k4enP0sUJ7ePQioJBSbpZLl5u2gzl0yHx9ewbA8V7-d3TyzDGbk8Ff0mJGGJgvA7xH1e0s0n2k_5_t2pBbJr0e1v1yIFx3jEWOOv8Sf1AR2X5_U5pXjzSxkIh05m7JqhI_FAbvzECVbQTRFY88rGo1c3gT8hL6Vt7v_56JnX9Kiyr9dA1fqy6ohmQ',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/set_001.jpg',
   },
 ]
 
@@ -235,8 +235,8 @@ export default function Collection() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
                 {filteredProducts.map((product) => (
                   <article key={product.slug} className="group flex flex-col h-full">
-                    <div className="relative aspect-square mb-6 bg-surface-container-lowest border border-outline-variant/40 flex items-center justify-center p-8 overflow-hidden">
-                      <img alt={product.name} className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" src={product.image} />
+                    <div className="relative aspect-square mb-6 border border-outline-variant/30 flex items-center justify-center p-2 overflow-hidden">
+                      <img alt={product.name} className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105" src={product.image} />
                       {product.tag && (
                         <div className="absolute top-4 left-4">
                           <span className="bg-primary/5 text-primary text-[10px] px-2 py-1 uppercase tracking-wider font-semibold border border-outline-variant/30">

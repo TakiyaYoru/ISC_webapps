@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
 
 type Product = {
   slug: string
@@ -149,13 +150,68 @@ const parseParagraphs = (value: string) =>
     .map((line) => line.trim())
     .filter(Boolean)
 
-const parseImageFiles = (value: string) =>
-  parseLines(value).map((line) => {
-    const parts = line.split(':')
-    return parts.length > 1 ? parts.slice(1).join(':').trim() : line
+const renderFormattedText = (text: string) => {
+  if (!text) return null
+  const hasList = /\d+\./.test(text)
+  if (!hasList) {
+    return <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">{text}</p>
+  }
+
+  const lines = text.split('\n').map((line) => line.trim()).filter(Boolean)
+  const listItems: { num: string; title: string; desc: string }[] = []
+  let introLines: string[] = []
+
+  lines.forEach((line) => {
+    const match = line.match(/^(\d+)\.\s*([^:]+)(?::\s*(.*))?$/)
+    if (match) {
+      listItems.push({
+        num: match[1],
+        title: match[2].trim(),
+        desc: (match[3] || '').trim(),
+      })
+    } else {
+      introLines.push(line)
+    }
   })
 
-const parsePrice = (price: string) => `${price} VNĐ`
+  return (
+    <div className="w-full text-center">
+      {introLines.length > 0 && (
+        <p className="font-body-lg text-body-lg text-primary font-medium mb-8 max-w-[700px] mx-auto leading-relaxed">
+          {introLines.join('\n')}
+        </p>
+      )}
+      <div className="mt-8 space-y-4 text-left max-w-[680px] mx-auto">
+        {listItems.map((item, idx) => (
+          <div
+            key={idx}
+            className="flex gap-5 items-start p-5 bg-surface-container-lowest border border-outline-variant/30 hover:border-secondary/50 shadow-ambient-sm transition-all duration-300 group"
+          >
+            <span className="w-8 h-8 rounded-full border border-secondary text-secondary bg-secondary/5 flex items-center justify-center font-serif text-sm flex-shrink-0 font-semibold mt-0.5 group-hover:bg-secondary group-hover:text-on-secondary transition-all duration-300">
+              {item.num}
+            </span>
+            <div className="flex-1">
+              <h4 className="font-body-lg text-body-lg text-primary font-semibold mb-1 group-hover:text-secondary transition-colors duration-300">
+                {item.title}
+              </h4>
+              {item.desc && (
+                <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                  {item.desc}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const parsePrice = (price: string) => {
+  if (!price) return ''
+  if (price.endsWith('VNĐ')) return price
+  return `${price} VNĐ`
+}
 
 const parseVolume = (infoLines: string[]) => {
   const volumeLine = infoLines.find((line) => line.toLowerCase().includes('dung tích'))
@@ -164,16 +220,100 @@ const parseVolume = (infoLines: string[]) => {
   return parts.length > 1 ? parts.slice(1).join(':').trim() : volumeLine
 }
 
+const productImages: Record<string, string[]> = {
+  'zayin-rare-elements-vital-facial-essence': [
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_002.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_003.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_004.png'
+  ],
+  'chet-energy-restoration-facial-treatment': [
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_002.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_003.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_004.png'
+  ],
+  'smtrs-100-de-secret': [
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_002.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_003.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_004.png'
+  ],
+  '500-000-stem-media-skin-booster': [
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_002.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_003.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_004.png'
+  ],
+  'alpeh-mito-viv-first-treatment-essence': [
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_002.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_003.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_004.png'
+  ],
+  'comprehensive-skincare-solution-quintet': [
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Comprehensive/quintet_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Comprehensive/quintet_002.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Comprehensive/quintet_003.jpg'
+  ],
+  'platinum-stemcell-reverse-aging-solution': [
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/set_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/set_002.png',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/set_003.png'
+  ]
+}
+
 export default function ProductDetail() {
   const { slug } = useParams()
   const product = productList.find((item) => item.slug === slug)
   const [added, setAdded] = useState(false)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [quantity, setQuantity] = useState(1)
+  const { addToCart } = useCart()
+
+  useEffect(() => {
+    setSelectedImageIndex(0)
+    setQuantity(1)
+  }, [slug])
+
   const infoLines = product ? parseLines(product.info) : []
-  const imageFiles = product ? parseImageFiles(product.images) : []
   const descriptionParas = product ? parseParagraphs(product.description) : []
+  const quoteText = descriptionParas[0] ?? 'Chuẩn mực của làn da cân bằng và bền vững'
+  const getQuoteParts = (text: string) => {
+    if (!text) return { quote: '', sub: '' }
+    const dotIndex = text.indexOf('.')
+    if (dotIndex === -1 || dotIndex === text.length - 1) {
+      return { quote: text, sub: '' }
+    }
+    return {
+      quote: text.substring(0, dotIndex + 1),
+      sub: text.substring(dotIndex + 1).trim()
+    }
+  }
+  const { quote: quoteMain, sub: quoteSub } = getQuoteParts(quoteText)
+  const isSet = product?.slug === 'platinum-stemcell-reverse-aging-solution' || product?.slug === 'comprehensive-skincare-solution-quintet'
+  const getSynergyText = () => {
+    if (!product) return ''
+    if (product.slug === 'platinum-stemcell-reverse-aging-solution') {
+      return 'Giải pháp chăm sóc đồng bộ 5 bước kích hoạt năng lượng tế bào và đảo ngược lão hóa toàn diện. Thiết lập một chu trình hoàn chỉnh giúp nuôi dưỡng, phục hồi sâu và duy trì vẻ đẹp bền vững theo thời gian.'
+    }
+    if (product.slug === 'comprehensive-skincare-solution-quintet') {
+      return 'Trải nghiệm trọn vẹn nghi thức chăm sóc da hoàng gia Seoul trong phiên bản thiết kế tinh giản, sang trọng. Thích hợp cho các chuyến du lịch hoặc hành trình khám phá giải pháp trẻ hóa tế bào da.'
+    }
+    return descriptionParas[1] ?? product.description
+  }
   const skinTags = product ? product.skinType.split(',').map((item) => item.trim()).filter(Boolean) : []
   const volume = parseVolume(infoLines)
   const related = productList.filter((p) => p.slug !== product?.slug)
+
+  const images = (product && productImages[product.slug]) || [
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuCcQ-yxyN5hfuj_R1_6Y-X-pwIbUVISq6RVMm-qM7HvtRu-21ArQFYNGGrgqrrFzc_w2JpfNqF2gq5g_Z93yrMv-R4v2YefUc1MxALmcvM0Pxgkoahf1q-r9lljWXNlsl1D-uzv94LMqpMiGAscWj302hsGPBz6Jcqft1gnsNOeCqA47YQY-DgmE_XGD4xStP9XHCxLx-qJqyQEvrU6HQMBnRA3jrFkEb1_jwxDCajDegxVl1CdK1X770yfqvNCVv-OH_IOOeBE10w'
+  ]
+  const mainImage = images[selectedImageIndex] || images[0]
+
+  const getProductMainImage = (itemSlug: string) => {
+    return productImages[itemSlug]?.[0] || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcQ-yxyN5hfuj_R1_6Y-X-pwIbUVISq6RVMm-qM7HvtRu-21ArQFYNGGrgqrrFzc_w2JpfNqF2gq5g_Z93yrMv-R4v2YefUc1MxALmcvM0Pxgkoahf1q-r9lljWXNlsl1D-uzv94LMqpMiGAscWj302hsGPBz6Jcqft1gnsNOeCqA47YQY-DgmE_XGD4xStP9XHCxLx-qJqyQEvrU6HQMBnRA3jrFkEb1_jwxDCajDegxVl1CdK1X770yfqvNCVv-OH_IOOeBE10w'
+  }
 
   if (!product) {
     return (
@@ -187,8 +327,8 @@ export default function ProductDetail() {
 
   return (
     <div>
-      <section className="container-wide py-8">
-        <nav className="font-body-md text-body-md text-on-surface-variant flex gap-2 items-center">
+      <section className="hidden md:block container-wide py-8">
+        <nav className="font-body-md text-body-md text-on-surface-variant flex flex-wrap gap-2 items-center">
           <Link className="hover:text-primary transition-colors" to="/">Trang chủ</Link>
           <span className="text-outline-variant">/</span>
           <Link className="hover:text-primary transition-colors" to="/brand">Thương hiệu</Link>
@@ -199,26 +339,28 @@ export default function ProductDetail() {
         </nav>
       </section>
 
-      <section className="container-wide mb-section-gap">
+      <section className="container-wide pt-6 md:pt-0 mb-section-gap">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-gutter">
           <div className="md:col-span-6 flex flex-col gap-4">
-            <div className="w-full aspect-square bg-surface-container-lowest border border-outline-variant flex items-center justify-center overflow-hidden">
+            <div className="w-full aspect-square border border-outline-variant/30 flex items-center justify-center overflow-hidden p-2">
               <img
                 alt={product.name}
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcQ-yxyN5hfuj_R1_6Y-X-pwIbUVISq6RVMm-qM7HvtRu-21ArQFYNGGrgqrrFzc_w2JpfNqF2gq5g_Z93yrMv-R4v2YefUc1MxALmcvM0Pxgkoahf1q-r9lljWXNlsl1D-uzv94LMqpMiGAscWj302hsGPBz6Jcqft1gnsNOeCqA47YQY-DgmE_XGD4xStP9XHCxLx-qJqyQEvrU6HQMBnRA3jrFkEb1_jwxDCajDegxVl1CdK1X770yfqvNCVv-OH_IOOeBE10w"
+                className="w-full h-full object-contain mix-blend-multiply"
+                src={mainImage}
               />
             </div>
             <div className="flex gap-4 overflow-x-auto no-scrollbar">
-              {imageFiles.length > 0 ? (
-                imageFiles.map((file) => (
-                  <div key={file} className="w-24 h-24 flex-shrink-0 bg-surface-container-lowest border border-outline-variant flex items-center justify-center text-[0.7rem] text-on-surface-variant text-center px-2">
-                    {file}
-                  </div>
-                ))
-              ) : (
-                <div className="w-24 h-24 flex-shrink-0 bg-surface-container-lowest border border-outline-variant" />
-              )}
+              {images.map((imgUrl, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={`w-24 h-24 flex-shrink-0 border transition-all duration-300 flex items-center justify-center p-2 overflow-hidden ${
+                    selectedImageIndex === index ? 'border-primary' : 'border-outline-variant/30 hover:border-primary/50'
+                  }`}
+                >
+                  <img src={imgUrl} alt={`${product.name} view ${index + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
+                </button>
+              ))}
             </div>
           </div>
 
@@ -239,22 +381,41 @@ export default function ProductDetail() {
               <div className="flex items-center gap-4">
                 <span className="font-body-md text-body-md text-primary">Số lượng:</span>
                 <div className="flex items-center border border-outline-variant h-12 w-32">
-                  <button className="flex-1 h-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors">−</button>
-                  <span className="font-body-md text-body-md text-primary w-8 text-center">1</span>
-                  <button className="flex-1 h-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors">+</button>
+                  <button
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="flex-1 h-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors"
+                  >
+                    −
+                  </button>
+                  <span className="font-body-md text-body-md text-primary w-8 text-center">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity((q) => q + 1)}
+                    className="flex-1 h-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => {
-                    setAdded(true)
-                    setTimeout(() => setAdded(false), 2600)
+                    if (product) {
+                      addToCart({
+                        slug: product.slug,
+                        name: product.name,
+                        type: product.type,
+                        price: product.price,
+                        image: images[0] || '',
+                      }, quantity)
+                      setAdded(true)
+                      setTimeout(() => setAdded(false), 2600)
+                    }
                   }}
-                  className="flex-1 bg-primary text-on-primary h-14 text-label-caps uppercase tracking-widest hover:bg-surface-tint transition-colors duration-300"
+                  className="w-full sm:flex-1 flex-shrink-0 bg-primary text-on-primary h-14 text-label-caps uppercase tracking-widest hover:bg-surface-tint transition-colors duration-300"
                 >
                   {added ? 'Đã thêm ✓' : 'Thêm vào giỏ hàng'}
                 </button>
-                <Link to="/contact" className="flex-1 border border-outline-variant text-primary h-14 flex items-center justify-center text-label-caps uppercase tracking-widest hover:border-primary transition-colors duration-300">
+                <Link to="/contact" className="w-full sm:flex-1 flex-shrink-0 border border-outline-variant text-primary h-14 flex items-center justify-center text-label-caps uppercase tracking-widest hover:border-primary transition-colors duration-300">
                   Tư vấn trước khi mua
                 </Link>
               </div>
@@ -265,26 +426,74 @@ export default function ProductDetail() {
 
       <section className="w-full bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop text-center">
         <div className="max-w-[800px] mx-auto flex flex-col items-center">
-          <h2 className="font-headline-md text-headline-md text-primary mb-8 italic">
-            {descriptionParas[0] ?? 'Chuẩn mực của làn da cân bằng và bền vững'}
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+            <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z" />
+          </svg>
+          <h2 className={`font-serif text-2xl md:text-3xl text-primary font-light italic leading-relaxed ${quoteSub ? 'mb-6' : 'mb-8'}`}>
+            "{quoteMain}"
           </h2>
-          <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
-            {descriptionParas[1] ?? product.description}
-          </p>
+          {quoteSub && (
+            <p className="font-body-md text-body-md text-on-surface-variant max-w-[680px] mx-auto mb-8 leading-relaxed">
+              {quoteSub}
+            </p>
+          )}
+          <div className="w-full text-on-surface-variant">
+            {renderFormattedText(descriptionParas[1] ?? product.description)}
+          </div>
         </div>
       </section>
 
       <section className="container-wide py-section-gap">
         <div className="text-center mb-16">
-          <h3 className="font-headline-md text-headline-md text-primary mb-4">Hiệu Qủa Đa Tầng</h3>
+          <h3 className="font-headline-md text-headline-md text-primary mb-4">Hiệu Quả Đa Tầng</h3>
           <div className="w-12 h-px bg-primary mx-auto" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
-          {skinTags.slice(0, 4).map((tag) => (
-            <div key={tag} className="border border-outline-variant bg-transparent p-8 flex flex-col items-center text-center hover:border-primary transition-colors duration-300">
-              <span className="text-primary text-[40px] mb-6 font-light">✦</span>
-              <h4 className="font-body-lg text-body-lg text-primary font-medium mb-3">{tag}</h4>
-              <p className="font-body-md text-body-md text-on-surface-variant">Giải pháp chăm sóc phù hợp với tình trạng da này.</p>
+          {[
+            {
+              title: 'Làm dịu & ổn định',
+              desc: 'Giảm thiểu tức thì các dấu hiệu kích ứng, đỏ rát, đưa da về trạng thái tĩnh lặng.',
+              icon: (
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+                  <path d="M12 20c4.4-4.5 6-9 6-12.5C18 4.5 15.5 3 12 3S6 4.5 6 7.5C6 11 7.6 15.5 12 20z" />
+                  <path d="M12 7.5a4.5 4.5 0 0 0-4.5 4.5M12 7.5a4.5 4.5 0 0 1 4.5 4.5" />
+                </svg>
+              ),
+            },
+            {
+              title: 'Củng cố hàng rào bảo vệ',
+              desc: 'Xây dựng lớp màng lipid vững chắc, ngăn chặn sự thất thoát độ ẩm và tác nhân gây hại.',
+              icon: (
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              ),
+            },
+            {
+              title: 'Tăng cường độ ẩm nội sinh',
+              desc: 'Kích thích khả năng tự tổng hợp Hyaluronic Acid, duy trì làn da ngậm nước sâu.',
+              icon: (
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+                  <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z" />
+                  <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13v20z" fill="currentColor" fillOpacity="0.2" />
+                </svg>
+              ),
+            },
+            {
+              title: 'Bảo vệ trước tác nhân lão hóa',
+              desc: 'Chống oxy hóa mạnh mẽ, vô hiệu hóa gốc tự do, bảo toàn mạng lưới collagen.',
+              icon: (
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6 4.5 4.5 0 0 0 0-12z" fill="currentColor" />
+                </svg>
+              ),
+            },
+          ].map((benefit, index) => (
+            <div key={index} className="border border-outline-variant bg-transparent p-8 flex flex-col items-center text-center hover:border-primary transition-colors duration-300">
+              {benefit.icon}
+              <h4 className="font-body-lg text-body-lg text-primary font-medium mb-3">{benefit.title}</h4>
+              <p className="font-body-md text-body-md text-on-surface-variant">{benefit.desc}</p>
             </div>
           ))}
         </div>
@@ -306,25 +515,26 @@ export default function ProductDetail() {
           <div className="py-16 lg:pr-24 flex flex-col justify-center bg-surface-container-low lg:bg-transparent lg:border-r border-outline-variant">
             <h3 className="font-headline-md text-headline-md text-primary mb-6">Thảo dược phương Đông & công nghệ phân tử hiện đại</h3>
             <p className="font-body-md text-body-md text-on-surface-variant mb-8 leading-relaxed">
-              {descriptionParas[1] ?? product.description}
+              {getSynergyText()}
             </p>
             <div className="w-12 h-px bg-outline-variant mb-8" />
             <h4 className="font-body-lg text-body-lg text-primary font-medium mb-4">Kết cấu mượt nhẹ, thẩm thấu tinh tế</h4>
             <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-              {descriptionParas[2] ?? 'Kết cấu tinh tế mang lại cảm giác dịu nhẹ, giúp làn da trở nên mịn màng, ổn định và sẵn sàng cho quá trình phục hồi ở chuẩn mực cao hơn.'}
+              {isSet ? 'Kết cấu tinh tế mang lại cảm giác dịu nhẹ, giúp làn da trở nên mịn màng, ổn định và sẵn sàng cho quá trình phục hồi ở chuẩn mực cao hơn.' : (descriptionParas[2] ?? 'Kết cấu tinh tế mang lại cảm giác dịu nhẹ, giúp làn da trở nên mịn màng, ổn định và sẵn sàng cho quá trình phục hồi ở chuẩn mực cao hơn.')}
             </p>
           </div>
           <figure className="w-full h-[50vh] lg:h-auto min-h-[500px] relative bg-surface-container-low">
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
-                backgroundImage:
-                  "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDvV9mhDCaMKAhB7QH_psRiQ_cU05OIvDeRbc-cjQd_VqB59DPUa9LnaASv074uR-qKnsTcWnZaDDXn_JNx_efXd5I_0N2t9_ojLjvqDrFn0fZWwKzMMOvGY4iPpbieXcK3rTtOi9e4fZSg8_cWnLA4bLFso2Yd4TF57PiD4pXJMNt9nwNJ0qAJ4t4MXZkXuyv-RZIAdld7ZeHe8N_HvwGlj_hcuLULbwnCwNISaFm0-q_WUO_NtgcPEzmdobHHKpwAzj-3sZB6trk')",
+                backgroundImage: `url('${images[3] || 'https://lh3.googleusercontent.com/aida-public/AB6AXuDvV9mhDCaMKAhB7QH_psRiQ_cU05OIvDeRbc-cjQd_VqB59DPUa9LnaASv074uR-qKnsTcWnZaDDXn_JNx_efXd5I_0N2t9_ojLjvqDrFn0fZWwKzMMOvGY4iPpbieXcK3rTtOi9e4fZSg8_cWnLA4bLFso2Yd4TF57PiD4pXJMNt9nwNJ0qAJ4t4MXZkXuyv-RZIAdld7ZeHe8N_HvwGlj_hcuLULbwnCwNISaFm0-q_WUO_NtgcPEzmdobHHKpwAzj-3sZB6trk'}')`,
               }}
             />
-            <figcaption className="absolute bottom-4 left-4 right-4 px-4 py-3 text-label text-label-md text-primary/60 bg-surface-container-low/90">
-              Hình minh họa kết cấu sản phẩm (sẽ thay bằng ảnh thật).
-            </figcaption>
+            {!images[3] && (
+              <figcaption className="absolute bottom-4 left-4 right-4 px-4 py-3 text-label text-label-md text-primary/60 bg-surface-container-low/90">
+                Hình minh họa kết cấu sản phẩm (sẽ thay bằng ảnh thật).
+              </figcaption>
+            )}
           </figure>
         </div>
       </section>
@@ -396,10 +606,12 @@ export default function ProductDetail() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {related.slice(0, 3).map((item) => (
               <Link key={item.slug} to={`/product/${item.slug}`} className="group cursor-pointer">
-                <div className="aspect-square bg-surface-container-lowest border border-outline-variant mb-6 overflow-hidden flex items-center justify-center p-8 transition-colors group-hover:border-primary">
-                  <div className="w-full h-full flex items-center justify-center text-center text-on-surface-variant text-sm">
-                    {item.name}
-                  </div>
+                <div className="aspect-square border border-outline-variant/30 mb-6 overflow-hidden flex items-center justify-center p-2 transition-colors group-hover:border-primary">
+                  <img
+                    src={getProductMainImage(item.slug)}
+                    alt={item.name}
+                    className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
                 <div className="text-center">
                   <span className="label-caps uppercase tracking-widest text-on-surface-variant mb-2 block">{item.type}</span>

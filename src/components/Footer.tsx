@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <img
               alt="IMPERIAL"
-              className="h-10 w-auto object-contain"
+              className="h-[60px] w-auto object-contain object-left"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6JZqdOd6huym1qP1GNGeuZsJO72ODXBcuBLmhE57K8qbDRr_T5yXn_2_XMhMGIcXQaFf4yWY1nAwN4UVNkbtl2LaSm84kzoXT--MgF1Wr-DfPqkr-83d2hCabdAUINc8A_qU5gQisg1lNkHI3L-9aGQPm_I4Eka9UrsoCw9izblnfs_8fhNV5oYgTojFhkv_Lg_z6dLh0wear_NsaPlXGhkvbbvjIfuWHFVtNI2VDDhd_dM8iTxUcXhu04MA8W0JjDN4p2mIxbVA"
             />
             <p className="text-sm leading-relaxed text-on-surface-variant">
@@ -46,7 +46,7 @@ export default function Footer() {
             <Link to="/contact" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
               Liên hệ
             </Link>
-            <Link to="/stores" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
+            <Link to="/about/stores" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
               Hệ thống cửa hàng
             </Link>
           </div>

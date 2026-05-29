@@ -1,89 +1,61 @@
 import { Link } from 'react-router-dom'
 import Reveal from '../components/Reveal'
-import { journal } from '../data/journal'
 
 export default function Journal() {
-  const [feature, ...rest] = journal
-
   return (
-    <div>
-      <section className="pt-36 md:pt-44 pb-12">
-        <div className="container-wide">
-          <Reveal>
-            <p className="label-caps text-ink/50 mb-6">The Journal</p>
-          </Reveal>
+    <div className="min-h-[80vh] bg-background text-on-background relative overflow-hidden flex flex-col justify-between">
+      {/* Soft atmospheric background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            'radial-gradient(ellipse 80% 60% at 85% 15%, rgba(200, 169, 106, 0.05), transparent 60%), radial-gradient(ellipse 70% 50% at 10% 90%, rgba(15, 26, 36, 0.02), transparent 55%)',
+        }}
+      />
+
+      <div className="container-wide relative pt-8 pb-24 flex-grow flex flex-col justify-center">
+        {/* Breadcrumb */}
+        <Reveal>
+          <nav className="flex text-sm text-on-surface-variant mb-16 font-body-md">
+            <Link className="hover:text-primary transition-colors" to="/">Trang chủ</Link>
+            <span className="mx-2">/</span>
+            <span className="text-primary font-medium">Blog</span>
+          </nav>
+        </Reveal>
+
+        {/* Coming Soon Content */}
+        <div className="max-w-3xl py-12">
           <Reveal delay={0.1}>
-            <h1 className="font-serif text-display-lg md:text-display-xl leading-[0.98] tracking-tighter max-w-5xl text-balance">
-              Essays from the <span className="italic font-light text-primary">laboratory.</span>
-            </h1>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="mt-10 max-w-xl text-body-lg text-ink/65 leading-relaxed">
-              Quiet, considered writing on the science, provenance, and rituals that compose our work.
+            <p className="label-caps text-secondary mb-6 tracking-[0.2em] font-semibold">
+              THE JOURNAL
             </p>
           </Reveal>
-        </div>
-      </section>
 
-      <section className="pb-24 md:pb-32">
-        <div className="container-wide">
-          <Reveal>
-            <Link to={`/journal/${feature.slug}`} className="group block mb-24 md:mb-32">
-              <div className="grid grid-cols-12 gap-6 md:gap-10 items-center">
-                <div className="col-span-12 md:col-span-8">
-                  <div className="relative aspect-[16/10] overflow-hidden bg-surface-container">
-                    <img
-                      src={feature.image}
-                      alt={feature.imageAlt}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-[1.03]"
-                    />
-                  </div>
-                </div>
-                <div className="col-span-12 md:col-span-4">
-                  <p className="label-caps text-ink/45 mb-4">
-                    {feature.category} · {feature.date} · {feature.readingTime}
-                  </p>
-                  <h2 className="font-serif text-display-md leading-[1.08] tracking-tight text-balance group-hover:text-primary transition-colors">
-                    {feature.title}
-                  </h2>
-                  <p className="mt-6 text-body-lg text-ink/65 leading-relaxed text-pretty">
-                    {feature.excerpt}
-                  </p>
-                  <p className="mt-10 text-[0.78rem] uppercase tracking-[0.22em] text-ink/60 group-hover:text-primary transition-colors">
-                    Read the essay →
-                  </p>
-                </div>
-              </div>
-            </Link>
+          <Reveal delay={0.25}>
+            <h1 className="font-serif text-display-md md:text-display-lg leading-[1.1] tracking-tighter text-primary mb-8 text-balance">
+              Nhật ký & Kiến thức Y khoa<br />
+              <span className="italic font-light text-secondary">Đang được biên soạn & tổng hợp.</span>
+            </h1>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
-            {rest.map((entry, i) => (
-              <Reveal key={entry.id} delay={i * 0.1}>
-                <Link to={`/journal/${entry.slug}`} className="group block">
-                  <div className="relative aspect-[5/6] overflow-hidden bg-surface-container">
-                    <img
-                      src={entry.image}
-                      alt={entry.imageAlt}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-[1.03]"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="pt-6">
-                    <p className="label-caps text-ink/45 mb-3">
-                      {entry.category} · {entry.date} · {entry.readingTime}
-                    </p>
-                    <h3 className="font-serif text-3xl tracking-tight leading-[1.15] group-hover:text-primary transition-colors text-balance">
-                      {entry.title}
-                    </h3>
-                    <p className="mt-4 text-body text-ink/60 line-clamp-2">{entry.excerpt}</p>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal delay={0.4}>
+            <p className="max-w-xl text-body-lg text-on-surface-variant/80 leading-relaxed mb-12 text-pretty">
+              Các bài viết chuyên sâu về khoa học tế bào, phác đồ trẻ hóa da và các nghi thức chăm sóc da lâm sàng từ phòng thí nghiệm của IMPERIAL đang được biên soạn, dịch thuật và hiệu đính để gửi tới quý khách trong thời gian sớm nhất. Xin quý khách vui lòng quay lại sau.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.55}>
+            <div className="flex flex-wrap items-center gap-6">
+              <Link to="/" className="inline-flex items-center gap-3 bg-primary text-on-primary px-8 py-4 text-[0.8125rem] uppercase tracking-widest font-medium transition-all duration-300 hover:bg-secondary">
+                Quay lại Trang chủ
+              </Link>
+              <a href="https://www.instagram.com/imperialskincare/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[0.8125rem] uppercase tracking-widest font-semibold pb-1 border-b border-primary/60 transition-all duration-300 hover:border-secondary hover:text-secondary">
+                Instagram Imperial Skincare →
+              </a>
+            </div>
+          </Reveal>
         </div>
-      </section>
+      </div>
     </div>
   )
 }

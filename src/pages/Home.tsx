@@ -14,7 +14,7 @@ const bestSellers = [
     name: 'SMTRs-100 De Secret',
     subtitle: 'Concentrated Renewal',
     price: 'Liên hệ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAbnyKPc4MrfbZ5sn4zQ2DGTdbHtnBJr6xK8yBFsAlCZfGK-XcI6lEArc5wnS6trlQfPdxuN4f1pa6eW0RXAkd6CHPthEqvZCdBaqylFZdB3sFk2OQXP0GTTf_irLEhgChzyIvjwJ17BFIsmRFJ3BFDn0X10C5vlLuYIP6yfY-fNT1AKySecAfnZdUFUYxh0FpbTv3qt7TOk2IODi5GV_dAMa8pfI6-_Si2giBBNG0PAyvY4BJe9RcYxJappmBzLKMIEI1_cJ6oXKQ',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_001.jpg',
   },
   {
     slug: '500-000-stem-media-skin-booster',
@@ -22,7 +22,7 @@ const bestSellers = [
     name: '500,000 Stem Media Skin Booster',
     subtitle: 'Cellular Energy',
     price: 'Liên hệ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAKHhzwYi39ShbfxRe8i2N4WBFv1WS0Pt9jzgzJmaD8wS_FFQl8FqwAw03MvsQA0YQFgsw1FtXyxIeJUoAuUozMlqW7YiJEFwBOWy-o4_R3WocW9in96_AcPeeISLrESKWRb-phLqAPvGrh9bcSQC3I8RffLjJwhvAPBnFx18uSAJ495tNAkaFLrkudf_QiVInDOUI4K93SDuiDzYKfLP4kXq3rGAPmgGplqaNL9VHMZtcVKnd2oAruVhViUqK1O2ERLXgAjW9MJW4',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_001.jpg',
   },
   {
     slug: 'zayin-rare-elements-vital-facial-essence',
@@ -30,7 +30,7 @@ const bestSellers = [
     name: 'Zayin Rare Elements Vital Facial Essence',
     subtitle: 'Deep Hydration',
     price: 'Liên hệ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBrtm89bAtt80XNi9lHiUzHbaJLlxIAXHMwRogyAeSPKq-5YvNvaUg8mKGwODTVmXWR0k7hUNWBsh7r90G5jpcpVZ0NgH6x9J616Lfn9UlNANZBZEco2Tqpt8uq5X2olwaDAN81Xo7Zm7NPXPYHqgDAm3cx5Tz8aHYkDaW7mzA9i3-KjKLqR69U7kANB4Lc2yZBBQiyQ440Z2JsmNC2kH5WY72vV0VilSt9vUdNg0pvw6rkQ3ktsNf69ho6UqtEAgjCBzqQ3dq1YCg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_001.jpg',
   },
   {
     slug: 'chet-energy-restoration-facial-treatment',
@@ -38,15 +38,15 @@ const bestSellers = [
     name: 'Chet Energy Restoration Facial Treatment',
     subtitle: 'Intensive Repair',
     price: 'Liên hệ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB3MP90PxQUVTEp7xe7K5YySaOYkqzd7WSAt8YmlbTEc2W05zvB3l98teYm1LqouqhWCWeykj5shq2-SF7exE5H40nYwuSh17ToT5VUpkO1RSVdtyr-3Wvq8MmW3Bl-XGbGciE9gthVbAPW7x1_mwy7FggZRFAEVhEFxkf7YSqoTMgsHC2NR00rRU5odZCt8O2JN1tvTggmpGCdakML8n8_4aag1AApMGj-1JOdfwWiYmXdxDgBujW8G4NVBlTQ3JEP1tEpTrMkuzo',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_001.jpg',
   },
   {
-    slug: 'aleph-mito-viv-first-treatment-essence',
+    slug: 'alpeh-mito-viv-first-treatment-essence',
     brand: 'LE LAFFÉ',
     name: 'Aleph Mito-viv First Treatment Essence',
     subtitle: 'Prep & Prime',
     price: 'Liên hệ',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAWqBc7EW7sbSbuDcLKkEZfMNlr6K68gSvD65xEVYPF45c4RkV3tC4dwdmRCCLFSkgqOGtZFxpKdsZLAmaa9qzM4q1b6tUU-oNSo5Z637HnvlbBXUF2BPIUoj4Dih3r-oLCjcPVpdLMtUAFAm0GgPcsPtL5pNq0TC8CUWVfP0fD_JJcE2dwYBAT-CugHEienypOKAmQSqqt_5PIYOQwXqw2IjQ-Vn-ikBt_TR3mUMEjBnfcQMeV-4SnYMGeBIUHOTsPRon1pK1btOQ',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_001.jpg',
   },
 ]
 
@@ -74,6 +74,42 @@ const blogArticles = [
 export default function Home() {
   const [currentHero, setCurrentHero] = useState(0)
   const productSliderRef = useRef<HTMLDivElement | null>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
+
+  const checkScroll = () => {
+    const el = productSliderRef.current
+    if (el) {
+      setCanScrollLeft(el.scrollLeft > 10)
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 10)
+    }
+  }
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    const el = productSliderRef.current
+    if (el) {
+      const scrollAmount = direction === 'left' ? -332 : 332
+      el.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+      const nextScroll = el.scrollLeft + scrollAmount
+      setCanScrollLeft(nextScroll > 10)
+      setCanScrollRight(nextScroll + el.clientWidth < el.scrollWidth - 10)
+      setTimeout(checkScroll, 400)
+    }
+  }
+
+  useEffect(() => {
+    const el = productSliderRef.current
+    if (el) {
+      el.addEventListener('scroll', checkScroll)
+      // Check after rendering
+      setTimeout(checkScroll, 500)
+      window.addEventListener('resize', checkScroll)
+    }
+    return () => {
+      el?.removeEventListener('scroll', checkScroll)
+      window.removeEventListener('resize', checkScroll)
+    }
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -90,6 +126,65 @@ export default function Home() {
     script.src = scriptSrc
     script.async = true
     document.body.appendChild(script)
+  }, [])
+
+  useEffect(() => {
+    const styleText = `
+      a[href*="elfsight"],
+      [class*="eapps-link"],
+      [class*="watermark"] {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        pointer-events: none !important;
+      }
+    `
+
+    const hideWatermark = () => {
+      const widgets = document.querySelectorAll('[class*="elfsight-app"]')
+      widgets.forEach((widget) => {
+        if (widget.shadowRoot) {
+          if (!widget.shadowRoot.querySelector('#hide-elfsight-style')) {
+            const style = document.createElement('style')
+            style.id = 'hide-elfsight-style'
+            style.textContent = styleText
+            widget.shadowRoot.appendChild(style)
+          }
+        }
+        widget.querySelectorAll('*').forEach((child) => {
+          if (child.shadowRoot) {
+            if (!child.shadowRoot.querySelector('#hide-elfsight-style')) {
+              const style = document.createElement('style')
+              style.id = 'hide-elfsight-style'
+              style.textContent = styleText
+              child.shadowRoot.appendChild(style)
+            }
+          }
+        })
+      })
+    }
+
+    hideWatermark()
+
+    const observer = new MutationObserver(() => {
+      hideWatermark()
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    })
+
+    const interval = setInterval(hideWatermark, 1000)
+
+    return () => {
+      observer.disconnect()
+      clearInterval(interval)
+    }
   }, [])
 
   return (
@@ -140,51 +235,64 @@ export default function Home() {
               >
                 KHÁM PHÁ TẤT CẢ <span className="text-[16px]">→</span>
               </Link>
-              <div className="flex gap-4 mt-12">
-                <button
-                  className="w-12 h-12 rounded-full border border-primary flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-300"
-                  onClick={() => productSliderRef.current?.scrollBy({ left: -332, behavior: 'smooth' })}
-                  aria-label="Previous"
-                >
-                  ←
-                </button>
-                <button
-                  className="w-12 h-12 rounded-full border border-primary flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-300"
-                  onClick={() => productSliderRef.current?.scrollBy({ left: 332, behavior: 'smooth' })}
-                  aria-label="Next"
-                >
-                  →
-                </button>
-              </div>
             </div>
 
-            <div className="lg:col-span-8 overflow-hidden relative">
-              <div className="flex gap-8 overflow-x-hidden pb-8" ref={productSliderRef}>
-                {bestSellers.map((product) => (
-                  <div key={product.slug} className="group flex flex-col w-[300px] shrink-0">
-                    <div className="aspect-[4/5] bg-white border border-secondary/10 mb-6 p-8 relative flex items-center justify-center overflow-hidden">
-                      <img
-                        alt={product.name}
-                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
-                        src={product.image}
-                      />
-                    </div>
-                    <div className="flex flex-col flex-1">
-                      <span className="font-label-caps text-[10px] text-secondary mb-2 block tracking-widest">{product.brand}</span>
-                      <h3 className="font-headline-md text-[22px] text-primary mb-2 line-clamp-2">{product.name}</h3>
-                      <p className="font-body-md text-[14px] text-on-surface-variant mb-6">{product.subtitle}</p>
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-secondary/20">
-                        <span className="font-body-md text-primary">{product.price}</span>
-                        <Link
-                          to={`/product/${product.slug}`}
-                          className="font-label-caps text-[11px] text-primary hover:text-secondary transition-colors tracking-widest"
-                        >
-                          XEM CHI TIẾT
-                        </Link>
+            <div className="lg:col-span-8 relative">
+              {/* Previous Button (Cocoon Style) */}
+              <button
+                className={`absolute left-0 top-[188px] -translate-y-1/2 z-10 w-10 h-16 bg-primary/90 text-bone flex items-center justify-center transition-all duration-300 shadow-float hover:bg-secondary hover:scale-105 ${
+                  canScrollLeft ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+                }`}
+                onClick={() => handleScroll('left')}
+                aria-label="Previous"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white">
+                  <path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              {/* Next Button (Cocoon Style) */}
+              <button
+                className={`absolute right-0 top-[188px] -translate-y-1/2 z-10 w-10 h-16 bg-primary/90 text-bone flex items-center justify-center transition-all duration-300 shadow-float hover:bg-secondary hover:scale-105 ${
+                  canScrollRight ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+                }`}
+                onClick={() => handleScroll('right')}
+                aria-label="Next"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white">
+                  <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              {/* Slider wrapper with overflow hidden to clip items */}
+              <div className="overflow-hidden">
+                <div className="flex gap-8 overflow-x-hidden pb-8" ref={productSliderRef}>
+                  {bestSellers.map((product) => (
+                    <div key={product.slug} className="group flex flex-col w-[300px] shrink-0">
+                      <div className="aspect-[4/5] border border-secondary/10 mb-6 p-2 relative flex items-center justify-center overflow-hidden">
+                        <img
+                          alt={product.name}
+                          className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
+                          src={product.image}
+                        />
+                      </div>
+                      <div className="flex flex-col flex-1">
+                        <span className="font-label-caps text-[10px] text-secondary mb-2 block tracking-widest">{product.brand}</span>
+                        <h3 className="font-headline-md text-[22px] text-primary mb-2 line-clamp-2">{product.name}</h3>
+                        <p className="font-body-md text-[14px] text-on-surface-variant mb-6">{product.subtitle}</p>
+                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-secondary/20">
+                          <span className="font-body-md text-primary">{product.price}</span>
+                          <Link
+                            to={`/product/${product.slug}`}
+                            className="font-label-caps text-[11px] text-primary hover:text-secondary transition-colors tracking-widest"
+                          >
+                            XEM CHI TIẾT
+                          </Link>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>

@@ -4,22 +4,48 @@ const highlights = [
   {
     title: 'Thu thập minh bạch',
     description: 'Chúng tôi chỉ thu thập những gì cần thiết để phục vụ bạn tốt hơn.',
-    icon: '👁️',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    ),
   },
   {
     title: 'Không bán dữ liệu',
     description: 'Thông tin của bạn thuộc về bạn. Chúng tôi cam kết không bao giờ bán nó cho bên thứ ba.',
-    icon: '⛔',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </svg>
+    ),
   },
   {
     title: 'Bảo vệ thông tin',
     description: 'Dữ liệu được lưu trữ và mã hóa theo chuẩn an toàn để hạn chế truy cập trái phép.',
-    icon: '🛡️',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    ),
   },
   {
     title: 'Quyền kiểm soát',
     description: 'Bạn có thể yêu cầu chỉnh sửa hoặc xóa dữ liệu bất cứ lúc nào.',
-    icon: '✅',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+        <line x1="4" y1="21" x2="4" y2="14" />
+        <line x1="4" y1="10" x2="4" y2="3" />
+        <line x1="12" y1="21" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12" y2="3" />
+        <line x1="20" y1="21" x2="20" y2="16" />
+        <line x1="20" y1="12" x2="20" y2="3" />
+        <line x1="1" y1="14" x2="7" y2="14" />
+        <line x1="9" y1="8" x2="15" y2="8" />
+        <line x1="17" y1="16" x2="23" y2="16" />
+      </svg>
+    ),
   },
 ]
 
@@ -27,11 +53,11 @@ export default function PolicyPrivacy() {
   return (
     <div>
       <div className="container-wide py-8">
-        <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-sm text-on-surface-variant">
+        <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-sm text-on-surface-variant font-body-md">
           <Link className="hover:text-primary transition-colors" to="/">Trang chủ</Link>
-          <span>/</span>
+          <span className="text-outline-variant">/</span>
           <span className="hover:text-primary transition-colors">Chính sách</span>
-          <span>/</span>
+          <span className="text-outline-variant">/</span>
           <span className="text-primary font-medium">Chính sách bảo mật</span>
         </nav>
       </div>
@@ -47,10 +73,10 @@ export default function PolicyPrivacy() {
       <section className="container-wide mb-section-gap">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {highlights.map((item) => (
-            <div key={item.title} className="border border-outline-variant p-8 bg-surface-container-lowest flex flex-col items-start hover:shadow-[0_40px_80px_-20px_rgba(18,29,39,0.06)] transition-shadow duration-300">
-              <span className="text-3xl mb-4">{item.icon}</span>
+            <div key={item.title} className="border border-outline-variant/60 p-8 bg-surface-container-lowest flex flex-col items-start hover:border-primary transition-all duration-300">
+              {item.icon}
               <h3 className="font-headline-md text-headline-md text-primary mb-2 text-lg">{item.title}</h3>
-              <p className="font-body-md text-body-md text-on-surface-variant text-sm">{item.description}</p>
+              <p className="font-body-md text-body-md text-on-surface-variant/80 text-sm leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>

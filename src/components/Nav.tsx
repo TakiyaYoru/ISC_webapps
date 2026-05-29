@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
 
 const navLinks = [
   {
@@ -25,14 +26,14 @@ const navLinks = [
   },
   { to: '/journal', label: 'Blog' },
   {
-    to: '/about',
+    to: '/about/imperial',
     label: 'Về chúng tôi',
     withChevron: true,
     children: [
-      { to: '/about', label: 'IMPERIAL Skin Care' },
-      { to: '/about#brands', label: 'Hệ thống thương hiệu' },
-      { to: '/stores', label: 'Hệ thống cửa hàng' },
-      { to: '/about#experience', label: 'Trải nghiệm khách hàng' },
+      { to: '/about/imperial', label: 'IMPERIAL Skin Care' },
+      { to: '/about/brands', label: 'Hệ thống thương hiệu' },
+      { to: '/about/stores', label: 'Hệ thống cửa hàng' },
+      { to: '/about/experience', label: 'Trải nghiệm khách hàng' },
     ],
   },
 ]
@@ -40,6 +41,7 @@ const navLinks = [
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
+  const { cartCount, setCartOpen } = useCart()
 
   useEffect(() => {
     setOpen(false)
@@ -112,21 +114,30 @@ export default function Nav() {
 
             <div className="flex items-center justify-end gap-5 flex-1 text-ink/80">
               <button aria-label="Search" className="hover:text-primary transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="7" />
-                  <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </button>
-              <button aria-label="Cart" className="hover:text-primary transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M6 7h12l-1 13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7z" strokeLinejoin="round" />
-                  <path d="M9 7a3 3 0 0 1 6 0" strokeLinecap="round" />
+              <button
+                onClick={() => setCartOpen(true)}
+                aria-label="Cart"
+                className="hover:text-primary transition-colors relative p-1"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="8" width="14" height="12" rx="2" ry="2" />
+                  <path d="M9 8V5a3 3 0 0 1 6 0v3" />
                 </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-secondary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-semibold leading-none scale-90">
+                    {cartCount}
+                  </span>
+                )}
               </button>
               <button aria-label="Account" className="hover:text-primary transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 20c1.8-3.3 5-5 8-5s6.2 1.7 8 5" strokeLinecap="round" />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
                 </svg>
               </button>
 
