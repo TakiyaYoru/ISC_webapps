@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../supabaseClient'
 
 const products = [
   {
@@ -7,21 +8,21 @@ const products = [
     name: 'Zayin Rare Elements Vital Facial Essence',
     type: 'Essence · 50ml',
     price: '7.400.000 VNĐ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/Zayin.png',
   },
   {
     slug: 'chet-energy-restoration-facial-treatment',
     name: 'Chet Energy Restoration Facial Treatment',
     type: 'Treatment · 50ml',
     price: '7.000.000 VNĐ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/Chet.png',
   },
   {
     slug: 'smtrs-100-de-secret',
     name: 'SMTRs-100 De Secret',
     type: 'Concentrate · 10ml',
     price: '6.300.000 VNĐ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/SMTRs-100.png',
     tag: 'Mới',
   },
   {
@@ -29,14 +30,14 @@ const products = [
     name: '500,000 Stem Media Skin Booster',
     type: 'Skin Booster · 30ml',
     price: '11.200.000 VNĐ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/500,000%20Stem.png',
   },
   {
     slug: 'alpeh-mito-viv-first-treatment-essence',
     name: 'Alpeh / Mito-viv First Treatment Essence',
     type: 'Essence · 100ml',
     price: '6.700.000 VNĐ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/Aleph.png',
   },
   {
     slug: 'comprehensive-skincare-solution-quintet',
@@ -50,7 +51,7 @@ const products = [
     name: 'Platinum StemCell Reverse-Aging Solution',
     type: 'Set full size',
     price: '31.000.000 VNĐ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/set_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/Full.png',
   },
 ]
 
@@ -75,23 +76,62 @@ const normalizeType = (value: string) => {
 }
 
 export default function Collection() {
-  const prices = useMemo(() => products.map((item) => parsePriceValue(item.price)), [])
-  const minLimit = Math.min(...prices)
-  const maxLimit = Math.max(...prices)
-  const priceSpan = maxLimit - minLimit || 1
+  const [productsList, setProductsList] = useState(products)
+
+  useEffect(() => {
+    let active = true
+    async function fetchProducts() {
+      try {
+        const { data, error } = await supabase.from('products').select('*')
+        if (!active) return
+        if (data && !error) {
+          const mapped = data.map((dbProduct: any) => {
+            const volumeLine = dbProduct.info ? dbProduct.info.split('\n').find((l: string) => l.toLowerCase().includes('dung tích')) : ''
+            const volume = volumeLine ? volumeLine.split(':')[1]?.trim() || '' : ''
+            const typeDisplay = volume ? `${dbProduct.type} · ${volume}` : dbProduct.type
+
+            return {
+              slug: dbProduct.slug,
+              name: dbProduct.name,
+              type: typeDisplay,
+              price: dbProduct.price,
+              image: dbProduct.images?.[0] || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcQ-yxyN5hfuj_R1_6Y-X-pwIbUVISq6RVMm-qM7HvtRu-21ArQFYNGGrgqrrFzc_w2JpfNqF2gq5g_Z93yrMv-R4v2YefUc1MxALmcvM0Pxgkoahf1q-r9lljWXNlsl1D-uzv94LMqpMiGAscWj302hsGPBz6Jcqft1gnsNOeCqA47YQY-DgmE_XGD4xStP9XHCxLx-qJqyQEvrU6HQMBnRA3jrFkEb1_jwxDCajDegxVl1CdK1X770yfqvNCVv-OH_IOOeBE10w',
+            }
+          })
+          setProductsList(mapped)
+        }
+      } catch (err) {
+        console.error('Error fetching products from Supabase:', err)
+      }
+    }
+    fetchProducts()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const prices = useMemo(() => productsList.map((item) => parsePriceValue(item.price)), [productsList])
+  const minLimit = useMemo(() => Math.min(...prices), [prices])
+  const maxLimit = useMemo(() => Math.max(...prices), [prices])
+  const priceSpan = useMemo(() => maxLimit - minLimit || 1, [minLimit, maxLimit])
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [priceMin, setPriceMin] = useState(minLimit)
   const [priceMax, setPriceMax] = useState(maxLimit)
 
+  useEffect(() => {
+    setPriceMin(minLimit)
+    setPriceMax(maxLimit)
+  }, [minLimit, maxLimit])
+
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
+    return productsList.filter((product) => {
       const type = normalizeType(product.type)
       const priceValue = parsePriceValue(product.price)
       const matchesType = selectedTypes.length === 0 || selectedTypes.includes(type)
       const matchesPrice = priceValue >= priceMin && priceValue <= priceMax
       return matchesType && matchesPrice
     })
-  }, [priceMax, priceMin, selectedTypes])
+  }, [productsList, priceMax, priceMin, selectedTypes])
 
   const toggleType = (type: string) => {
     setSelectedTypes((prev) =>

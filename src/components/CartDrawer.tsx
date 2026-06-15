@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../context/CartContext'
+import { useUser } from '../context/UserContext'
+import { supabase } from '../supabaseClient'
 
 export default function CartDrawer() {
   const {
@@ -13,23 +15,110 @@ export default function CartDrawer() {
     clearCart,
   } = useCart()
 
+  const { user, addOrder, setLoginModalOpen } = useUser()
+
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'form' | 'success'>('cart')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [note, setNote] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'momo' | 'vnpay'>('cod')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [validationError, setValidationError] = useState(false)
+
+  useEffect(() => {
+    if (user && checkoutStep === 'form') {
+      if (!name) setName(user.name)
+      if (!phone) setPhone(user.phone)
+    }
+  }, [user, checkoutStep, name, phone])
+
+  const processCheckout = async () => {
+    if (!name || !phone) {
+      setValidationError(true)
+      return
+    }
+    setValidationError(false)
+
+    if (paymentMethod === 'cod') {
+      setIsSubmitting(true)
+      
+      const orderCode = `COD-${Math.floor(100000 + Math.random() * 900000)}`
+
+      // Add to user account history
+      addOrder({
+        code: orderCode,
+        total: cartTotal,
+        paymentMethod: 'cod',
+        clientName: name,
+        clientPhone: phone,
+        items: cartItems.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image,
+        })),
+      })
+
+      // Fire-and-forget database insertion so it doesn't block the UI transition
+      const insertOrder = async () => {
+        try {
+          const { error } = await supabase.from('orders').insert([
+            {
+              client_name: name,
+              client_phone: phone,
+              note: `[COD] [Mã DH: ${orderCode}] ${note || ''}`,
+              items: cartItems,
+            }
+          ])
+          if (error) {
+            console.error('Error inserting order to Supabase:', error)
+          }
+        } catch (err) {
+          console.error('Error during checkout submission:', err)
+        }
+      }
+      insertOrder()
+
+      // Simulate a quick 600ms processing delay and transition immediately
+      setTimeout(() => {
+        setIsSubmitting(false)
+        setCheckoutStep('success')
+        clearCart()
+      }, 600)
+    } else if (paymentMethod === 'momo') {
+      const code = `MOMO-${Math.floor(100000 + Math.random() * 900000)}`
+      localStorage.setItem('imperial_skincare_pending_order', JSON.stringify({
+        name,
+        phone,
+        note,
+        items: cartItems,
+        method: 'momo',
+        code,
+        total: cartTotal,
+      }))
+      setCartOpen(false)
+      // Redirect to external simulated gateway page
+      window.location.href = `/payment/gateway?method=momo`
+    } else if (paymentMethod === 'vnpay') {
+      const code = `VNPAY-${Math.floor(100000 + Math.random() * 900000)}`
+      localStorage.setItem('imperial_skincare_pending_order', JSON.stringify({
+        name,
+        phone,
+        note,
+        items: cartItems,
+        method: 'vnpay',
+        code,
+        total: cartTotal,
+      }))
+      setCartOpen(false)
+      // Redirect to external simulated gateway page
+      window.location.href = `/payment/gateway?method=vnpay`
+    }
+  }
 
   const handleCheckoutSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name || !phone) return
-    setIsSubmitting(true)
-
-    // Simulate submission delay
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setCheckoutStep('success')
-      clearCart()
-    }, 1800)
+    processCheckout()
   }
 
   const handleClose = () => {
@@ -40,6 +129,7 @@ export default function CartDrawer() {
       setName('')
       setPhone('')
       setNote('')
+      setPaymentMethod('cod')
     }, 300)
   }
 
@@ -72,7 +162,7 @@ export default function CartDrawer() {
             <div className="p-6 border-b border-outline-variant flex items-center justify-between">
               <h2 className="font-serif text-2xl text-primary tracking-tight">
                 {checkoutStep === 'cart' && 'Giỏ hàng của bạn'}
-                {checkoutStep === 'form' && 'Thông tin nhận tư vấn'}
+                {checkoutStep === 'form' && 'Thông tin đặt hàng'}
                 {checkoutStep === 'success' && 'Gửi thành công'}
               </h2>
               <button
@@ -162,12 +252,20 @@ export default function CartDrawer() {
 
               {checkoutStep === 'form' && (
                 <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="flex flex-col gap-6 py-2">
-                  <div className="bg-surface-container-low p-4 border border-outline-variant/40 rounded">
-                    <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
-                      <span className="text-secondary font-medium">Lưu ý:</span> Chức năng đặt hàng trực tuyến hiện tại đang được chuẩn hóa. Quý khách vui lòng để lại thông tin liên hệ dưới đây. Chuyên viên chăm sóc khách hàng của <strong className="text-primary font-serif">IMPERIAL</strong> sẽ gọi điện tư vấn chuyên sâu về tình trạng da và xác nhận thông tin giao nhận hàng cho quý khách.
-                    </p>
-                  </div>
-
+                  {!user && (
+                    <div className="bg-primary/[0.02] border border-outline-variant/40 p-4 flex items-center justify-between text-xs">
+                      <span className="text-on-surface-variant/85 font-body-md leading-relaxed">
+                        Đăng nhập để tích lũy điểm thưởng và lưu lịch sử đơn hàng.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setLoginModalOpen(true)}
+                        className="text-secondary hover:underline font-semibold uppercase tracking-wider font-mono shrink-0 ml-4"
+                      >
+                        Đăng nhập
+                      </button>
+                    </div>
+                  )}
                   <div className="flex flex-col gap-2">
                     <label htmlFor="client-name" className="label-caps text-xs text-primary font-semibold">
                       Họ và Tên <span className="text-secondary">*</span>
@@ -175,11 +273,15 @@ export default function CartDrawer() {
                     <input
                       id="client-name"
                       type="text"
-                      required
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => {
+                        setName(e.target.value)
+                        if (validationError && e.target.value) setValidationError(false)
+                      }}
                       placeholder="Nguyễn Văn A"
-                      className="w-full h-12 px-4 border border-outline-variant bg-transparent focus:outline-none focus:border-primary text-body-md"
+                      className={`w-full h-12 px-4 border bg-transparent focus:outline-none focus:border-primary text-body-md ${
+                        validationError && !name ? 'border-red-500/80 focus:border-red-500 bg-red-500/[0.01]' : 'border-outline-variant'
+                      }`}
                     />
                   </div>
 
@@ -190,34 +292,108 @@ export default function CartDrawer() {
                     <input
                       id="client-phone"
                       type="tel"
-                      required
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(e) => {
+                        setPhone(e.target.value)
+                        if (validationError && e.target.value) setValidationError(false)
+                      }}
                       placeholder="0901234567"
-                      className="w-full h-12 px-4 border border-outline-variant bg-transparent focus:outline-none focus:border-primary text-body-md"
+                      className={`w-full h-12 px-4 border bg-transparent focus:outline-none focus:border-primary text-body-md ${
+                        validationError && !phone ? 'border-red-500/80 focus:border-red-500 bg-red-500/[0.01]' : 'border-outline-variant'
+                      }`}
                     />
                   </div>
 
+                  {validationError && (
+                    <div className="bg-red-500/5 border border-red-500/20 text-red-500 text-xs p-3.5 rounded leading-relaxed text-center font-semibold">
+                      * Vui lòng điền Họ tên và Số điện thoại nhận hàng!
+                    </div>
+                  )}
+
                   <div className="flex flex-col gap-2">
                     <label htmlFor="client-note" className="label-caps text-xs text-primary font-semibold">
-                      Ghi chú thêm (Tình trạng da, thời gian gọi điện...)
+                      Ghi chú thêm (Thời gian nhận hàng, chỉ dẫn giao...)
                     </label>
                     <textarea
                       id="client-note"
-                      rows={4}
+                      rows={3}
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
-                      placeholder="Ví dụ: Da tôi nhạy cảm, muốn được tư vấn kỹ hơn về essence. Hãy gọi cho tôi ngoài giờ hành chính."
+                      placeholder="Ví dụ: Giao hàng vào giờ hành chính..."
                       className="w-full p-4 border border-outline-variant bg-transparent focus:outline-none focus:border-primary text-body-md resize-none"
                     />
+                  </div>
+
+                  {/* Payment Method Cards */}
+                  <div className="flex flex-col gap-3 mt-2">
+                    <label className="label-caps text-xs text-primary font-semibold">
+                      Phương thức thanh toán <span className="text-secondary">*</span>
+                    </label>
+                    <div className="flex flex-col gap-3">
+                      {/* COD */}
+                      <div 
+                        onClick={() => setPaymentMethod('cod')}
+                        className={`flex gap-4 p-4 border cursor-pointer transition-all items-center ${paymentMethod === 'cod' ? 'border-primary bg-primary/[0.03]' : 'border-outline-variant hover:border-primary/50'}`}
+                      >
+                        <div className="w-9 h-9 rounded bg-[#C8A96A]/10 text-[#C8A96A] flex items-center justify-center flex-shrink-0">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <rect x="1" y="3" width="15" height="13" />
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                            <circle cx="5.5" cy="18.5" r="2.5" />
+                            <circle cx="18.5" cy="18.5" r="2.5" />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body-md text-sm font-semibold text-primary">Thanh toán khi nhận hàng (COD)</p>
+                          <p className="text-xs text-on-surface-variant/70 truncate">Thanh toán trực tiếp bằng tiền mặt khi nhận hàng.</p>
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentMethod === 'cod' ? 'border-primary' : 'border-outline'}`}>
+                          {paymentMethod === 'cod' && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </div>
+                      </div>
+
+                      {/* MoMo */}
+                      <div 
+                        onClick={() => setPaymentMethod('momo')}
+                        className={`flex gap-4 p-4 border cursor-pointer transition-all items-center ${paymentMethod === 'momo' ? 'border-primary bg-primary/[0.03]' : 'border-outline-variant hover:border-primary/50'}`}
+                      >
+                        <div className="w-9 h-9 rounded bg-[#A50064] text-white flex items-center justify-center font-bold text-[9px] tracking-tighter flex-shrink-0">
+                          momo
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body-md text-sm font-semibold text-primary">Ví MoMo (Redirect)</p>
+                          <p className="text-xs text-on-surface-variant/70 truncate">Chuyển hướng đến cổng thanh toán MoMo.</p>
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentMethod === 'momo' ? 'border-primary' : 'border-outline'}`}>
+                          {paymentMethod === 'momo' && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </div>
+                      </div>
+
+                      {/* VNPAY */}
+                      <div 
+                        onClick={() => setPaymentMethod('vnpay')}
+                        className={`flex gap-4 p-4 border cursor-pointer transition-all items-center ${paymentMethod === 'vnpay' ? 'border-primary bg-primary/[0.03]' : 'border-outline-variant hover:border-primary/50'}`}
+                      >
+                        <div className="w-9 h-9 rounded bg-[#005BAA] text-white flex items-center justify-center font-bold text-[9px] tracking-tighter flex-shrink-0 uppercase">
+                          vnpay
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body-md text-sm font-semibold text-primary">Cổng VNPAY (Redirect)</p>
+                          <p className="text-xs text-on-surface-variant/70 truncate">Chuyển hướng đến cổng thanh toán VNPAY.</p>
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentMethod === 'vnpay' ? 'border-primary' : 'border-outline'}`}>
+                          {paymentMethod === 'vnpay' && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </form>
               )}
 
               {checkoutStep === 'success' && (
                 <div className="h-full flex flex-col items-center justify-center text-center py-16">
-                  {/* Premium Success Checkmark Animation */}
-                  <div className="w-20 h-20 mb-8 rounded-full border border-secondary flex items-center justify-center relative bg-secondary/5">
+                  {/* Success Checkmark Animation */}
+                  <div className="w-20 h-20 mb-8 rounded-full border border-secondary flex items-center justify-center relative bg-secondary/5 mx-auto">
                     <motion.svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="36"
@@ -239,11 +415,11 @@ export default function CartDrawer() {
                     </motion.svg>
                   </div>
 
-                  <h3 className="font-serif text-2xl text-primary mb-4">Gửi thông tin thành công</h3>
+                  <h3 className="font-serif text-2xl text-primary mb-4">Gửi yêu cầu thành công</h3>
                   <p className="font-body-md text-on-surface-variant/80 mb-8 max-w-[320px] leading-relaxed">
-                    Yêu cầu tư vấn và đặt hàng của quý khách <strong className="text-primary font-medium">{name}</strong> đã được hệ thống ghi nhận.
+                    Yêu cầu đặt hàng của quý khách <strong className="text-primary font-medium">{name}</strong> đã được hệ thống ghi nhận.
                     <br /><br />
-                    Chuyên viên của chúng tôi sẽ liên hệ trực tiếp tới số điện thoại <strong className="text-primary font-medium">{phone}</strong> trong vòng 2 giờ làm việc tiếp theo.
+                    Chuyên viên của chúng tôi sẽ gọi điện xác nhận đơn hàng qua số điện thoại <strong className="text-primary font-medium">{phone}</strong> trong vòng 2 giờ làm việc.
                   </p>
                   <button
                     onClick={handleClose}
@@ -255,7 +431,7 @@ export default function CartDrawer() {
               )}
             </div>
 
-            {/* Footer Summary (Sticky at bottom) */}
+            {/* Footer Summary */}
             {cartItems.length > 0 && checkoutStep === 'cart' && (
               <div className="p-6 border-t border-outline-variant bg-surface-container-lowest">
                 <div className="flex justify-between items-center mb-6">
@@ -267,7 +443,7 @@ export default function CartDrawer() {
                     onClick={() => setCheckoutStep('form')}
                     className="w-full bg-primary text-on-primary h-14 text-label-caps uppercase tracking-widest font-medium transition-colors hover:bg-secondary duration-300"
                   >
-                    Đặt hàng / Nhận tư vấn mua hàng
+                    Tiến hành thanh toán
                   </button>
                   <button
                     onClick={handleClose}
@@ -283,9 +459,9 @@ export default function CartDrawer() {
               <div className="p-6 border-t border-outline-variant bg-surface-container-lowest">
                 <div className="flex flex-col gap-3">
                   <button
-                    type="submit"
-                    form="checkout-form"
-                    disabled={isSubmitting || !name || !phone}
+                    type="button"
+                    onClick={processCheckout}
+                    disabled={isSubmitting}
                     className="w-full bg-primary text-on-primary h-14 text-label-caps uppercase tracking-widest font-medium transition-colors hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed duration-300 flex items-center justify-center gap-3"
                   >
                     {isSubmitting ? (
@@ -294,10 +470,10 @@ export default function CartDrawer() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Đang gửi thông tin...
+                        Đang xử lý...
                       </>
                     ) : (
-                      'Xác nhận thông tin'
+                      paymentMethod === 'cod' ? 'Xác nhận đặt hàng (COD)' : (paymentMethod === 'momo' ? 'Thanh toán qua ví MoMo' : 'Thanh toán qua cổng VNPAY')
                     )}
                   </button>
                   <button

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { supabase } from '../supabaseClient'
 
 type Product = {
   slug: string
@@ -13,7 +14,7 @@ type Product = {
   info: string
   usage: string
   ingredients: string
-  images: string
+  images: string | string[]
 }
 
 const productList: Product[] = [
@@ -92,7 +93,7 @@ const productList: Product[] = [
   {
     slug: 'alpeh-mito-viv-first-treatment-essence',
     name: 'Alpeh, Mito-viv First Treatment Essence',
-    type: 'Cream',
+    type: 'Essence',
     skinType: 'Da nhạy cảm, Nếp nhăn, Đốm nâu/nám/xỉn màu',
     timeUsage: 'Tất cả thời điểm',
     price: '6.700.000 VNĐ',
@@ -222,31 +223,31 @@ const parseVolume = (infoLines: string[]) => {
 
 const productImages: Record<string, string[]> = {
   'zayin-rare-elements-vital-facial-essence': [
-    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/Zayin.png',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_002.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_003.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_004.png'
   ],
   'chet-energy-restoration-facial-treatment': [
-    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/Chet.png',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_002.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_003.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_004.png'
   ],
   'smtrs-100-de-secret': [
-    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/SMTRs-100.png',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_002.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_003.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_004.png'
   ],
   '500-000-stem-media-skin-booster': [
-    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/500,000%20Stem.png',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_002.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_003.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_004.png'
   ],
   'alpeh-mito-viv-first-treatment-essence': [
-    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/Aleph.png',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_002.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_003.jpg',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_004.png'
@@ -257,7 +258,7 @@ const productImages: Record<string, string[]> = {
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Comprehensive/quintet_003.jpg'
   ],
   'platinum-stemcell-reverse-aging-solution': [
-    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/set_001.jpg',
+    'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/Full.png',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/set_002.png',
     'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Platinum%20StemCell%20Full/set_003.png'
   ]
@@ -265,7 +266,8 @@ const productImages: Record<string, string[]> = {
 
 export default function ProductDetail() {
   const { slug } = useParams()
-  const product = productList.find((item) => item.slug === slug)
+  const [product, setProduct] = useState<Product | undefined>(undefined)
+  const [loading, setLoading] = useState(true)
   const [added, setAdded] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -276,21 +278,56 @@ export default function ProductDetail() {
     setQuantity(1)
   }, [slug])
 
+  useEffect(() => {
+    let active = true
+    async function getProduct() {
+      setLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('slug', slug)
+          .maybeSingle()
+
+        if (!active) return
+
+        if (data && !error) {
+          const mapped: Product = {
+            slug: data.slug,
+            name: data.name,
+            type: data.type,
+            skinType: data.skin_type || data.skinType,
+            timeUsage: data.time_usage || data.timeUsage,
+            price: data.price,
+            description: data.description,
+            info: data.info || '',
+            usage: data.usage || '',
+            ingredients: data.ingredients || '',
+            images: data.images || [],
+          }
+          setProduct(mapped)
+        } else {
+          const local = productList.find((item) => item.slug === slug)
+          setProduct(local)
+        }
+      } catch (err) {
+        console.error('Error fetching product from Supabase:', err)
+        const local = productList.find((item) => item.slug === slug)
+        setProduct(local)
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    getProduct()
+    return () => {
+      active = false
+    }
+  }, [slug])
+
   const infoLines = product ? parseLines(product.info) : []
   const descriptionParas = product ? parseParagraphs(product.description) : []
-  const quoteText = descriptionParas[0] ?? 'Chuẩn mực của làn da cân bằng và bền vững'
-  const getQuoteParts = (text: string) => {
-    if (!text) return { quote: '', sub: '' }
-    const dotIndex = text.indexOf('.')
-    if (dotIndex === -1 || dotIndex === text.length - 1) {
-      return { quote: text, sub: '' }
-    }
-    return {
-      quote: text.substring(0, dotIndex + 1),
-      sub: text.substring(dotIndex + 1).trim()
-    }
-  }
-  const { quote: quoteMain, sub: quoteSub } = getQuoteParts(quoteText)
+
   const isSet = product?.slug === 'platinum-stemcell-reverse-aging-solution' || product?.slug === 'comprehensive-skincare-solution-quintet'
   const getSynergyText = () => {
     if (!product) return ''
@@ -306,13 +343,28 @@ export default function ProductDetail() {
   const volume = parseVolume(infoLines)
   const related = productList.filter((p) => p.slug !== product?.slug)
 
-  const images = (product && productImages[product.slug]) || [
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuCcQ-yxyN5hfuj_R1_6Y-X-pwIbUVISq6RVMm-qM7HvtRu-21ArQFYNGGrgqrrFzc_w2JpfNqF2gq5g_Z93yrMv-R4v2YefUc1MxALmcvM0Pxgkoahf1q-r9lljWXNlsl1D-uzv94LMqpMiGAscWj302hsGPBz6Jcqft1gnsNOeCqA47YQY-DgmE_XGD4xStP9XHCxLx-qJqyQEvrU6HQMBnRA3jrFkEb1_jwxDCajDegxVl1CdK1X770yfqvNCVv-OH_IOOeBE10w'
-  ]
+  const images =
+    product && Array.isArray(product.images) && product.images.length > 0
+      ? product.images
+      : (product && productImages[product.slug]) || [
+          'https://lh3.googleusercontent.com/aida-public/AB6AXuCcQ-yxyN5hfuj_R1_6Y-X-pwIbUVISq6RVMm-qM7HvtRu-21ArQFYNGGrgqrrFzc_w2JpfNqF2gq5g_Z93yrMv-R4v2YefUc1MxALmcvM0Pxgkoahf1q-r9lljWXNlsl1D-uzv94LMqpMiGAscWj302hsGPBz6Jcqft1gnsNOeCqA47YQY-DgmE_XGD4xStP9XHCxLx-qJqyQEvrU6HQMBnRA3jrFkEb1_jwxDCajDegxVl1CdK1X770yfqvNCVv-OH_IOOeBE10w'
+        ]
   const mainImage = images[selectedImageIndex] || images[0]
 
   const getProductMainImage = (itemSlug: string) => {
     return productImages[itemSlug]?.[0] || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCcQ-yxyN5hfuj_R1_6Y-X-pwIbUVISq6RVMm-qM7HvtRu-21ArQFYNGGrgqrrFzc_w2JpfNqF2gq5g_Z93yrMv-R4v2YefUc1MxALmcvM0Pxgkoahf1q-r9lljWXNlsl1D-uzv94LMqpMiGAscWj302hsGPBz6Jcqft1gnsNOeCqA47YQY-DgmE_XGD4xStP9XHCxLx-qJqyQEvrU6HQMBnRA3jrFkEb1_jwxDCajDegxVl1CdK1X770yfqvNCVv-OH_IOOeBE10w'
+  }
+
+  if (loading) {
+    return (
+      <div className="container-editorial pt-32 pb-24 text-center">
+        <svg className="animate-spin h-8 w-8 text-secondary mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p className="font-body-md text-on-surface-variant">Đang tải thông tin sản phẩm...</p>
+      </div>
+    )
   }
 
   if (!product) {
@@ -424,19 +476,8 @@ export default function ProductDetail() {
         </div>
       </section>
 
-      <section className="w-full bg-surface-container-low py-section-gap px-margin-mobile md:px-margin-desktop text-center">
+      <section className="w-full bg-surface-container-low py-12 md:py-16 px-margin-mobile md:px-margin-desktop text-center">
         <div className="max-w-[800px] mx-auto flex flex-col items-center">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
-            <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z" />
-          </svg>
-          <h2 className={`font-serif text-2xl md:text-3xl text-primary font-light italic leading-relaxed ${quoteSub ? 'mb-6' : 'mb-8'}`}>
-            "{quoteMain}"
-          </h2>
-          {quoteSub && (
-            <p className="font-body-md text-body-md text-on-surface-variant max-w-[680px] mx-auto mb-8 leading-relaxed">
-              {quoteSub}
-            </p>
-          )}
           <div className="w-full text-on-surface-variant">
             {renderFormattedText(descriptionParas[1] ?? product.description)}
           </div>
@@ -448,13 +489,13 @@ export default function ProductDetail() {
           <h3 className="font-headline-md text-headline-md text-primary mb-4">Hiệu Quả Đa Tầng</h3>
           <div className="w-12 h-px bg-primary mx-auto" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-gutter">
           {[
             {
               title: 'Làm dịu & ổn định',
               desc: 'Giảm thiểu tức thì các dấu hiệu kích ứng, đỏ rát, đưa da về trạng thái tĩnh lặng.',
               icon: (
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-4 md:mb-6">
                   <path d="M12 20c4.4-4.5 6-9 6-12.5C18 4.5 15.5 3 12 3S6 4.5 6 7.5C6 11 7.6 15.5 12 20z" />
                   <path d="M12 7.5a4.5 4.5 0 0 0-4.5 4.5M12 7.5a4.5 4.5 0 0 1 4.5 4.5" />
                 </svg>
@@ -464,7 +505,7 @@ export default function ProductDetail() {
               title: 'Củng cố hàng rào bảo vệ',
               desc: 'Xây dựng lớp màng lipid vững chắc, ngăn chặn sự thất thoát độ ẩm và tác nhân gây hại.',
               icon: (
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-4 md:mb-6">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               ),
@@ -473,7 +514,7 @@ export default function ProductDetail() {
               title: 'Tăng cường độ ẩm nội sinh',
               desc: 'Kích thích khả năng tự tổng hợp Hyaluronic Acid, duy trì làn da ngậm nước sâu.',
               icon: (
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-4 md:mb-6">
                   <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z" />
                   <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13v20z" fill="currentColor" fillOpacity="0.2" />
                 </svg>
@@ -483,17 +524,17 @@ export default function ProductDetail() {
               title: 'Bảo vệ trước tác nhân lão hóa',
               desc: 'Chống oxy hóa mạnh mẽ, vô hiệu hóa gốc tự do, bảo toàn mạng lưới collagen.',
               icon: (
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-4 md:mb-6">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6 4.5 4.5 0 0 0 0-12z" fill="currentColor" />
                 </svg>
               ),
             },
           ].map((benefit, index) => (
-            <div key={index} className="border border-outline-variant bg-transparent p-8 flex flex-col items-center text-center hover:border-primary transition-colors duration-300">
+            <div key={index} className="border border-outline-variant bg-transparent p-4 sm:p-5 md:p-8 flex flex-col items-center text-center hover:border-primary transition-colors duration-300">
               {benefit.icon}
-              <h4 className="font-body-lg text-body-lg text-primary font-medium mb-3">{benefit.title}</h4>
-              <p className="font-body-md text-body-md text-on-surface-variant">{benefit.desc}</p>
+              <h4 className="font-body-lg text-[14px] sm:text-[15px] md:text-body-lg text-primary font-medium mb-3">{benefit.title}</h4>
+              <p className="font-body-md text-[11px] sm:text-xs md:text-body-md text-on-surface-variant leading-relaxed">{benefit.desc}</p>
             </div>
           ))}
         </div>

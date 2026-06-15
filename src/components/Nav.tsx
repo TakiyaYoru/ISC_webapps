@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useUser } from '../context/UserContext'
 
 const navLinks = [
   {
@@ -42,6 +43,8 @@ export default function Nav() {
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
   const { cartCount, setCartOpen } = useCart()
+  const navigate = useNavigate()
+  const { user, setLoginModalOpen } = useUser()
 
   useEffect(() => {
     setOpen(false)
@@ -51,7 +54,7 @@ export default function Nav() {
     <div className="sticky top-0 z-50">
       <div className="bg-ink text-bone py-2 text-center">
         <p className="text-[0.68rem] uppercase tracking-[0.2em] font-medium">
-          Miễn phí giao hàng cho đơn hàng từ 1.500.000 VNĐ trở lên
+          MIỄN PHÍ GIAO HÀNG CHO TẤT CẢ CÁC ĐƠN TRONG NỘI THÀNH TP.HCM
         </p>
       </div>
 
@@ -134,11 +137,24 @@ export default function Nav() {
                   </span>
                 )}
               </button>
-              <button aria-label="Account" className="hover:text-primary transition-colors">
+              <button
+                onClick={() => {
+                  if (user) {
+                    navigate('/account')
+                  } else {
+                    setLoginModalOpen(true)
+                  }
+                }}
+                aria-label="Account"
+                className="hover:text-primary transition-colors relative"
+              >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
+                {user && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border border-surface" />
+                )}
               </button>
 
               <button

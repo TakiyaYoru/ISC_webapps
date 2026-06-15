@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../supabaseClient'
+import { useCart } from '../context/CartContext'
 
 const heroImages = [
   'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_001.png',
   'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_002.png',
-  'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_003.png',
+  'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_003.png?v=2',
 ]
 
 const bestSellers = [
@@ -12,41 +14,41 @@ const bestSellers = [
     slug: 'smtrs-100-de-secret',
     brand: 'LE LAFFÉ',
     name: 'SMTRs-100 De Secret',
-    subtitle: 'Concentrated Renewal',
+    subtitle: 'Skin Booster Pre-Treatment',
     price: 'Liên hệ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/smtrs_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/SMTRs100/SMTRs-100.png',
   },
   {
     slug: '500-000-stem-media-skin-booster',
     brand: 'LE LAFFÉ',
     name: '500,000 Stem Media Skin Booster',
-    subtitle: 'Cellular Energy',
+    subtitle: 'Skin Booster',
     price: 'Liên hệ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/booster_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/500,000%20Stem/500,000%20Stem.png',
   },
   {
     slug: 'zayin-rare-elements-vital-facial-essence',
     brand: 'LE LAFFÉ',
     name: 'Zayin Rare Elements Vital Facial Essence',
-    subtitle: 'Deep Hydration',
+    subtitle: 'Essence',
     price: 'Liên hệ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/zayin_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Zayin/Zayin.png',
   },
   {
     slug: 'chet-energy-restoration-facial-treatment',
     brand: 'LE LAFFÉ',
     name: 'Chet Energy Restoration Facial Treatment',
-    subtitle: 'Intensive Repair',
+    subtitle: 'Cream',
     price: 'Liên hệ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/chet_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Chet/Chet.png',
   },
   {
     slug: 'alpeh-mito-viv-first-treatment-essence',
     brand: 'LE LAFFÉ',
     name: 'Aleph Mito-viv First Treatment Essence',
-    subtitle: 'Prep & Prime',
+    subtitle: 'Essence',
     price: 'Liên hệ',
-    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/aleph_001.jpg',
+    image: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Alpeh/Aleph.png',
   },
 ]
 
@@ -72,23 +74,66 @@ const blogArticles = [
 ]
 
 export default function Home() {
+  const { addToCart } = useCart()
+  const [articles, setArticles] = useState<Array<{
+    category: string
+    title: string
+    excerpt: string
+    image: string
+    slug?: string
+  }>>(blogArticles)
+
+  useEffect(() => {
+    let active = true
+    async function fetchArticles() {
+      try {
+        const { data, error } = await supabase
+          .from('journal')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(3)
+        if (!active) return
+        if (data && !error && data.length > 0) {
+          const mapped = data.map((dbArt: any) => ({
+            category: dbArt.category,
+            title: dbArt.title,
+            excerpt: dbArt.excerpt,
+            image: dbArt.image,
+            slug: dbArt.slug,
+          }))
+          setArticles(mapped)
+        }
+      } catch (err) {
+        console.error('Error fetching blog articles from Supabase:', err)
+      }
+    }
+    fetchArticles()
+    return () => {
+      active = false
+    }
+  }, [])
+
   const [currentHero, setCurrentHero] = useState(0)
   const productSliderRef = useRef<HTMLDivElement | null>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
+  const [scrollLeft, setScrollLeft] = useState(0)
+  const [sliderWidth, setSliderWidth] = useState(0)
 
   const checkScroll = () => {
     const el = productSliderRef.current
     if (el) {
       setCanScrollLeft(el.scrollLeft > 10)
       setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 10)
+      setScrollLeft(el.scrollLeft)
+      setSliderWidth(el.clientWidth)
     }
   }
 
   const handleScroll = (direction: 'left' | 'right') => {
     const el = productSliderRef.current
     if (el) {
-      const scrollAmount = direction === 'left' ? -332 : 332
+      const scrollAmount = direction === 'left' ? -352 : 352
       el.scrollBy({ left: scrollAmount, behavior: 'smooth' })
       const nextScroll = el.scrollLeft + scrollAmount
       setCanScrollLeft(nextScroll > 10)
@@ -225,10 +270,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative">
             <div className="lg:col-span-4 flex flex-col items-start lg:sticky top-32 self-start">
               <span className="font-label-caps text-label-caps text-secondary mb-4 tracking-widest">THE ESSENTIALS</span>
-              <h2 className="font-headline-lg text-headline-lg text-primary mb-6">Sản phẩm bán chạy</h2>
-              <p className="font-body-md text-on-surface-variant mb-10 leading-relaxed">
-                Discover our most coveted formulations. These signature pieces represent the core of the IMPERIAL regimen, beloved for their undeniable efficacy and luxurious sensory experience.
-              </p>
+              <h2 className="font-headline-lg text-headline-lg text-primary mb-8">Sản phẩm bán chạy</h2>
               <Link
                 to="/collection"
                 className="inline-flex items-center gap-2 border-b border-primary pb-1 font-label-caps text-label-caps text-primary hover:text-secondary hover:border-secondary transition-colors duration-300"
@@ -267,31 +309,71 @@ export default function Home() {
               {/* Slider wrapper with overflow hidden to clip items */}
               <div className="overflow-hidden">
                 <div className="flex gap-8 overflow-x-hidden pb-8" ref={productSliderRef}>
-                  {bestSellers.map((product) => (
-                    <div key={product.slug} className="group flex flex-col w-[300px] shrink-0">
-                      <div className="aspect-[4/5] border border-secondary/10 mb-6 p-2 relative flex items-center justify-center overflow-hidden">
-                        <img
-                          alt={product.name}
-                          className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
-                          src={product.image}
-                        />
-                      </div>
-                      <div className="flex flex-col flex-1">
-                        <span className="font-label-caps text-[10px] text-secondary mb-2 block tracking-widest">{product.brand}</span>
-                        <h3 className="font-headline-md text-[22px] text-primary mb-2 line-clamp-2">{product.name}</h3>
-                        <p className="font-body-md text-[14px] text-on-surface-variant mb-6">{product.subtitle}</p>
-                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-secondary/20">
-                          <span className="font-body-md text-primary">{product.price}</span>
-                          <Link
-                            to={`/product/${product.slug}`}
-                            className="font-label-caps text-[11px] text-primary hover:text-secondary transition-colors tracking-widest"
-                          >
-                            XEM CHI TIẾT
+                  {bestSellers.map((product, index) => {
+                    const cardStart = index * 352
+                    const cardEnd = cardStart + 320
+                    const isFullyVisible = sliderWidth === 0 || (cardStart >= scrollLeft - 10 && cardEnd <= scrollLeft + sliderWidth + 10)
+
+                    return (
+                      <div
+                        key={product.slug}
+                        className={`group flex flex-col w-[320px] shrink-0 relative transition-all duration-300 ${
+                          !isFullyVisible ? 'pointer-events-none select-none' : ''
+                        }`}
+                      >
+                        {/* Image Container with pure white background to blend with cool grey JPGs and transparent PNGs */}
+                        <div className="aspect-square bg-white border border-secondary/5 mb-4 relative flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-secondary/10">
+                          <img
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+                            src={product.image}
+                          />
+                          <Link to={`/product/${product.slug}`} className="absolute inset-0 z-10" aria-label={product.name} />
+                        </div>
+
+                        {/* Info Container */}
+                        <div className="flex flex-col flex-1 px-1">
+                          <span className="font-label-caps text-[10px] text-secondary mb-1 block tracking-widest">{product.brand}</span>
+                          <Link to={`/product/${product.slug}`} className="hover:text-secondary transition-colors">
+                            <h3 className="font-body-lg font-medium text-[16px] text-primary mb-1 line-clamp-2 min-h-[44px] leading-snug">
+                              {product.name}
+                            </h3>
                           </Link>
+                          <p className="font-label-caps text-[10px] text-on-surface-variant/60 uppercase tracking-wider mb-4">
+                            {product.subtitle}
+                          </p>
+
+                          {/* Bottom row: Price and Add to Cart */}
+                          <div className="flex items-center justify-between mt-auto pt-3 border-t border-secondary/10">
+                            <span className="font-body-md font-semibold text-primary">{product.price}</span>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                addToCart({
+                                  slug: product.slug,
+                                  name: product.name,
+                                  type: 'Sản phẩm',
+                                  price: product.price,
+                                  image: product.image,
+                                }, 1)
+                              }}
+                              className="relative z-20 w-10 h-10 bg-[#EADECC] hover:bg-[#D9CCBA] text-primary flex items-center justify-center transition-colors duration-300 flex-shrink-0"
+                              title="Thêm vào giỏ hàng"
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                                <line x1="3" y1="6" x2="21" y2="6" />
+                                <path d="M16 10a4 4 0 0 1-8 0" />
+                                <line x1="12" y1="13" x2="12" y2="17" />
+                                <line x1="10" y1="15" x2="14" y2="15" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -338,8 +420,8 @@ export default function Home() {
             <h2 className="font-headline-lg text-headline-lg text-primary">Blog chăm sóc da</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {blogArticles.map((article) => (
-              <Link key={article.title} className="group cursor-pointer flex flex-col" to="/journal">
+            {articles.map((article) => (
+              <Link key={article.title} className="group cursor-pointer flex flex-col" to={article.slug ? `/journal/${article.slug}` : '/journal'}>
                 <div className="aspect-[4/3] bg-white border border-secondary/10 overflow-hidden mb-6 relative flex items-center justify-center">
                   <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src={article.image} alt={article.title} />
                 </div>

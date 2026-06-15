@@ -28,3 +28,8 @@ Ref/
 
 # Claude
 .claude/
+
+# Local env files
+.env
+.env.local
+.env.*.local

@@ -1,10 +1,73 @@
+import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Reveal from '../components/Reveal'
 import { findArticle, journal } from '../data/journal'
+import type { JournalEntry } from '../data/journal'
+import { supabase } from '../supabaseClient'
 
 export default function JournalArticle() {
   const { slug } = useParams()
-  const article = slug ? findArticle(slug) : undefined
+  const [article, setArticle] = useState<JournalEntry | undefined>(undefined)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    async function getArticle() {
+      if (!slug) return
+      setLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('journal')
+          .select('*')
+          .eq('slug', slug)
+          .maybeSingle()
+
+        if (!active) return
+
+        if (data && !error) {
+          const mapped: JournalEntry = {
+            id: data.id,
+            slug: data.slug,
+            title: data.title,
+            excerpt: data.excerpt,
+            category: data.category,
+            readingTime: data.reading_time || '5 min',
+            image: data.image,
+            imageAlt: data.image_alt || data.title,
+            date: data.date || new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' }).replace('/', '.'),
+            body: typeof data.content === 'string' ? data.content.split(/\n\n+/) : (Array.isArray(data.body) ? data.body : []),
+          }
+          setArticle(mapped)
+        } else {
+          const local = findArticle(slug)
+          setArticle(local)
+        }
+      } catch (err) {
+        console.error('Error fetching journal article from Supabase:', err)
+        const local = findArticle(slug)
+        setArticle(local)
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    getArticle()
+    return () => {
+      active = false
+    }
+  }, [slug])
+
+  if (loading) {
+    return (
+      <div className="container-editorial pt-40 pb-32 text-center">
+        <svg className="animate-spin h-8 w-8 text-secondary mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p className="font-body-md text-on-surface-variant">Đang tải bài viết...</p>
+      </div>
+    )
+  }
 
   if (!article) {
     return (
@@ -16,7 +79,7 @@ export default function JournalArticle() {
     )
   }
 
-  const more = journal.filter((j) => j.id !== article.id).slice(0, 2)
+  const more = journal.filter((j) => j.slug !== article.slug).slice(0, 2)
 
   return (
     <div>

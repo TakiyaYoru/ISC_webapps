@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 
 export type CartItem = {
   slug: string
@@ -42,7 +42,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('imperial_skincare_cart', JSON.stringify(cartItems))
   }, [cartItems])
 
-  const addToCart = (product: Omit<CartItem, 'quantity'>, quantity = 1) => {
+  const addToCart = useCallback((product: Omit<CartItem, 'quantity'>, quantity = 1) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.slug === product.slug)
       if (existing) {
@@ -55,25 +55,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prev, { ...product, quantity }]
     })
     setCartOpen(true) // Open cart drawer automatically on adding
-  }
+  }, [])
 
-  const removeFromCart = (slug: string) => {
+  const removeFromCart = useCallback((slug: string) => {
     setCartItems((prev) => prev.filter((item) => item.slug !== slug))
-  }
+  }, [])
 
-  const updateQuantity = (slug: string, quantity: number) => {
+  const updateQuantity = useCallback((slug: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(slug)
+      setCartItems((prev) => prev.filter((item) => item.slug !== slug))
       return
     }
     setCartItems((prev) =>
       prev.map((item) => (item.slug === slug ? { ...item, quantity } : item))
     )
-  }
+  }, [])
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([])
-  }
+  }, [])
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0)
   const cartTotal = cartItems.reduce((acc, item) => acc + parsePriceNumber(item.price) * item.quantity, 0)
