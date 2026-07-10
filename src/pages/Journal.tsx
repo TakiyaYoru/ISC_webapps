@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Reveal from '../components/Reveal'
-import { journal } from '../data/journal'
-import type { JournalEntry } from '../data/journal'
-import { supabase } from '../supabaseClient'
+import { api } from '../services/api'
+import type { JournalArticle } from '../services/api'
 
 export default function Journal() {
-  const [articles, setArticles] = useState<JournalEntry[]>([])
+  const [articles, setArticles] = useState<JournalArticle[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -14,33 +13,27 @@ export default function Journal() {
     async function fetchArticles() {
       setLoading(true)
       try {
-        const { data, error } = await supabase
-          .from('journal')
-          .select('*')
-          .order('created_at', { ascending: false })
+        const data = await api.journal.getAll()
         
         if (!active) return
 
-        if (data && !error && data.length > 0) {
-          const mapped: JournalEntry[] = data.map((dbArt: any) => ({
+        if (data && data.length > 0) {
+          const mapped: JournalArticle[] = data.map((dbArt) => ({
             id: dbArt.id,
             slug: dbArt.slug,
             title: dbArt.title,
             excerpt: dbArt.excerpt,
             category: dbArt.category,
-            readingTime: dbArt.reading_time || '5 min',
+            readingTime: dbArt.readingTime || '5 min',
             image: dbArt.image,
-            imageAlt: dbArt.image_alt || dbArt.title,
-            date: dbArt.date || new Date(dbArt.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' }).replace('/', '.'),
-            body: typeof dbArt.content === 'string' ? dbArt.content.split(/\n\n+/) : [],
+            imageAlt: dbArt.imageAlt || dbArt.title,
+            date: dbArt.date,
+            body: dbArt.body,
           }))
           setArticles(mapped)
-        } else {
-          setArticles(journal)
         }
       } catch (err) {
-        console.error('Error fetching journal from Supabase:', err)
-        setArticles(journal)
+        console.error('Error fetching journal from API:', err)
       } finally {
         if (active) setLoading(false)
       }

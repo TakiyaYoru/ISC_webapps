@@ -1,59 +1,94 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Reveal from '../components/Reveal'
-import { products } from '../data/products'
+import { api } from '../services/api'
+import type { Product } from '../services/api'
 
 const rituals = [
   {
     id: 'r01',
-    name: 'The Morning Protocol',
-    tagline: 'A quiet beginning',
-    duration: 'Six minutes',
-    steps: ['bespoke-mist', 'atelier-essence', 'celestial-serum', 'provenance-balm'],
+    name: 'Nghi thức Buổi sáng',
+    tagline: 'Sự khởi đầu thanh tĩnh',
+    duration: 'Sáu phút',
+    steps: [
+      'alpeh-mito-viv-first-treatment-essence',
+      'zayin-rare-elements-vital-facial-essence',
+      'chet-energy-restoration-facial-treatment'
+    ],
     image:
       'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1600&q=80',
     description:
-      'A brief, measured composition designed to prepare the skin for the day — hydration, protection, and the kind of luminosity that reads as rest, not retouching.',
+      'Một chu trình tối giản thiết kế riêng để chuẩn bị làn da cho ngày mới — cấp nước, bảo vệ và đem lại vẻ ngoài rạng rỡ tự nhiên tràn đầy năng lượng.',
   },
   {
     id: 'r02',
-    name: 'The Evening Ritual',
-    tagline: 'Cellular repair, repeated',
-    duration: 'Twelve minutes',
-    steps: ['clarity-oil', 'atelier-essence', 'celestial-serum', 'provenance-balm'],
+    name: 'Nghi thức Buổi tối',
+    tagline: 'Kích hoạt tế bào, phục hồi chuyên sâu',
+    duration: 'Mười hai phút',
+    steps: [
+      'smtrs-100-de-secret',
+      '500-000-stem-media-skin-booster',
+      'chet-energy-restoration-facial-treatment'
+    ],
     image:
       'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=1600&q=80',
     description:
-      'The ritual that matters most. Dissolve the day, prepare the skin, deliver repair, then seal. Your skin sleeps with you — ours insists on keeping pace.',
+      'Nghi thức quan trọng nhất trong ngày. Giải tỏa căng thẳng của làn da, chuẩn bị nền da dẫn truyền, phục hồi đa tầng ở cấp độ tế bào và nuôi dưỡng sâu qua đêm.',
   },
   {
     id: 'r03',
-    name: 'The Weekly Rite',
-    tagline: 'One evening, one hour',
-    duration: 'Forty minutes',
-    steps: ['clarity-oil', 'imperial-mask', 'atelier-essence', 'provenance-balm'],
+    name: 'Liệu trình Cuối tuần',
+    tagline: 'Một buổi tối tái sinh',
+    duration: 'Bốn mươi phút',
+    steps: [
+      'alpeh-mito-viv-first-treatment-essence',
+      'smtrs-100-de-secret',
+      '500-000-stem-media-skin-booster',
+      'chet-energy-restoration-facial-treatment'
+    ],
     image:
       'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1600&q=80',
     description:
-      'Reserved for Sundays, or any evening you set aside. Polish, restore, replenish — a chapter of quiet cellular reset.',
+      'Dành riêng cho ngày cuối tuần hoặc bất cứ khi nào da cần phục hồi khẩn cấp. Thanh lọc sâu, kích hoạt năng lượng và khóa ẩm toàn phần, mang lại vẻ tươi trẻ tức thì.',
   },
 ]
 
 export default function Rituals() {
+  const [productsList, setProductsList] = useState<Product[]>([])
+
+  useEffect(() => {
+    let active = true
+    async function fetchProducts() {
+      try {
+        const data = await api.products.getAll()
+        if (active) {
+          setProductsList(data)
+        }
+      } catch (err) {
+        console.error('Error fetching products for Rituals:', err)
+      }
+    }
+    fetchProducts()
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <div>
       <section className="pt-36 md:pt-44 pb-16 md:pb-24">
         <div className="container-wide">
           <Reveal>
-            <p className="label-caps text-ink/50 mb-6">The Rituals</p>
+            <p className="label-caps text-ink/50 mb-6">Nghi thức Chăm Sóc</p>
           </Reveal>
           <Reveal delay={0.1}>
-            <h1 className="font-serif text-display-lg md:text-display-xl leading-[0.98] tracking-tighter max-w-5xl text-balance">
-              Compositions, <span className="italic font-light text-primary">not routines.</span>
+            <h1 className="font-serif text-3xl md:text-5xl leading-tight max-w-5xl text-balance">
+              Nghi thức hoàng gia, <span className="italic font-light text-primary">không chỉ là thói quen.</span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
-            <p className="mt-10 max-w-xl text-body-lg text-ink/65 leading-relaxed">
-              A ritual is the temporal structure that allows a formula to do its work. We compose three — one for waking, one for resting, one for renewal.
+            <p className="mt-6 max-w-xl font-sans text-sm md:text-base text-ink/65 leading-relaxed">
+              Một nghi thức hoàn chỉnh là cấu trúc thời gian giúp các công thức hoạt chất phát huy tối đa công dụng. Chúng tôi thiết kế ba nghi thức cho buổi sáng, buổi tối và liệu trình tái sinh chuyên sâu.
             </p>
           </Reveal>
         </div>
@@ -62,14 +97,15 @@ export default function Rituals() {
       <section className="pb-24 md:pb-32 space-y-28 md:space-y-40">
         {rituals.map((r, rIndex) => {
           const steps = r.steps
-            .map((slug) => products.find((p) => p.slug === slug))
-            .filter(Boolean)
+            .map((slug) => productsList.find((p) => p.slug === slug))
+            .filter((p): p is Product => !!p)
+
           const reversed = rIndex % 2 === 1
           return (
             <div key={r.id} className="container-wide">
               <div className="grid grid-cols-12 gap-6 md:gap-12 items-center">
                 <Reveal className={`col-span-12 md:col-span-6 ${reversed ? 'md:order-2' : ''}`}>
-                  <div className="relative aspect-[4/5] overflow-hidden bg-[#E3C9B0]">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-surface-container-low rounded-lg shadow-ambient">
                     <img
                       src={r.image}
                       alt={r.name}
@@ -86,39 +122,39 @@ export default function Rituals() {
                     </p>
                   </Reveal>
                   <Reveal delay={0.1}>
-                    <h2 className="font-serif text-display-md leading-[1.05] tracking-tight text-balance">
+                    <h2 className="font-serif text-2xl md:text-3xl leading-[1.1] text-primary">
                       {r.name}
                     </h2>
                   </Reveal>
                   <Reveal delay={0.15}>
-                    <p className="mt-4 font-serif italic text-primary text-xl">{r.tagline}</p>
+                    <p className="mt-2 font-serif italic text-secondary text-lg">{r.tagline}</p>
                   </Reveal>
                   <Reveal delay={0.2}>
-                    <p className="mt-8 max-w-md text-body-lg text-ink/70 leading-relaxed text-pretty">
+                    <p className="mt-6 max-w-md font-sans text-sm md:text-base text-on-surface-variant leading-relaxed text-pretty">
                       {r.description}
                     </p>
                   </Reveal>
 
                   <Reveal delay={0.3}>
-                    <ol className="mt-12 space-y-4 max-w-md">
+                    <ol className="mt-10 space-y-4 max-w-md">
                       {steps.map((p, i) => (
-                        <li key={p!.id}>
+                        <li key={p.slug}>
                           <Link
-                            to={`/product/${p!.slug}`}
-                            className="group flex items-baseline justify-between gap-6 border-t border-ink/10 pt-5 hover:text-primary transition-colors"
+                            to={`/product/${p.slug}`}
+                            className="group flex items-baseline justify-between gap-6 border-t border-outline-variant/40 pt-5 hover:text-secondary transition-colors"
                           >
                             <div className="flex gap-5 items-baseline">
-                              <span className="font-serif italic text-primary text-lg w-8">
+                              <span className="font-serif italic text-secondary text-lg w-8">
                                 {String(i + 1).padStart(2, '0')}
                               </span>
                               <span>
-                                <p className="font-serif text-xl tracking-tight">{p!.name}</p>
-                                <p className="label-caps text-ink/45 mt-1 group-hover:text-primary/70">
-                                  {p!.tagline}
+                                <p className="font-serif text-lg leading-tight text-primary group-hover:text-secondary transition-colors">{p.name}</p>
+                                <p className="font-sans text-xs text-on-surface-variant/70 mt-1">
+                                  Dòng sản phẩm: {p.type}
                                 </p>
                               </span>
                             </div>
-                            <span className="text-[0.72rem] uppercase tracking-[0.18em] text-ink/40 group-hover:text-primary">
+                            <span className="text-[0.72rem] uppercase tracking-[0.18em] text-outline group-hover:text-secondary">
                               →
                             </span>
                           </Link>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../supabaseClient'
+import { api } from '../services/api'
 
 export default function Contact() {
   const [name, setName] = useState('')
@@ -28,17 +28,11 @@ export default function Contact() {
     localStorage.setItem('imperial_skincare_inquiries', JSON.stringify([newInquiry, ...inquiries]))
 
     try {
-      const { error } = await supabase.from('inquiries').insert([
-        {
-          name,
-          email,
-          message,
-        }
-      ])
-
-      if (error) {
-        console.error('Error inserting inquiry into Supabase:', error)
-      }
+      await api.contact.submit({
+        name,
+        email,
+        message,
+      })
     } catch (err) {
       console.error('Error submitting contact form:', err)
     } finally {

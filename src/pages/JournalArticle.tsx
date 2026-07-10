@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Reveal from '../components/Reveal'
-import { findArticle, journal } from '../data/journal'
-import type { JournalEntry } from '../data/journal'
-import { supabase } from '../supabaseClient'
+import { api } from '../services/api'
+import type { JournalArticle as JournalEntry } from '../services/api'
 
 export default function JournalArticle() {
   const { slug } = useParams()
   const [article, setArticle] = useState<JournalEntry | undefined>(undefined)
   const [loading, setLoading] = useState(true)
+  const [more, setMore] = useState<JournalEntry[]>([])
 
   useEffect(() => {
     let active = true
@@ -16,36 +16,48 @@ export default function JournalArticle() {
       if (!slug) return
       setLoading(true)
       try {
-        const { data, error } = await supabase
-          .from('journal')
-          .select('*')
-          .eq('slug', slug)
-          .maybeSingle()
+        const data = await api.journal.getBySlug(slug)
 
         if (!active) return
 
-        if (data && !error) {
+        if (data) {
           const mapped: JournalEntry = {
             id: data.id,
             slug: data.slug,
             title: data.title,
             excerpt: data.excerpt,
             category: data.category,
-            readingTime: data.reading_time || '5 min',
+            readingTime: data.readingTime || '5 min',
             image: data.image,
-            imageAlt: data.image_alt || data.title,
-            date: data.date || new Date(data.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit' }).replace('/', '.'),
-            body: typeof data.content === 'string' ? data.content.split(/\n\n+/) : (Array.isArray(data.body) ? data.body : []),
+            imageAlt: data.imageAlt || data.title,
+            date: data.date,
+            body: data.body,
           }
           setArticle(mapped)
-        } else {
-          const local = findArticle(slug)
-          setArticle(local)
+
+          // Load other articles for "Continue reading"
+          const allArticles = await api.journal.getAll()
+          if (active) {
+            const filtered = allArticles
+              .filter((j) => j.slug !== mapped.slug)
+              .slice(0, 2)
+              .map((dbArt) => ({
+                id: dbArt.id,
+                slug: dbArt.slug,
+                title: dbArt.title,
+                excerpt: dbArt.excerpt,
+                category: dbArt.category,
+                readingTime: dbArt.readingTime || '5 min',
+                image: dbArt.image,
+                imageAlt: dbArt.imageAlt || dbArt.title,
+                date: dbArt.date,
+                body: dbArt.body,
+              }))
+            setMore(filtered)
+          }
         }
       } catch (err) {
-        console.error('Error fetching journal article from Supabase:', err)
-        const local = findArticle(slug)
-        setArticle(local)
+        console.error('Error fetching journal article from API:', err)
       } finally {
         if (active) setLoading(false)
       }
@@ -78,8 +90,6 @@ export default function JournalArticle() {
       </div>
     )
   }
-
-  const more = journal.filter((j) => j.slug !== article.slug).slice(0, 2)
 
   return (
     <div>

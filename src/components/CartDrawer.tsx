@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../context/CartContext'
 import { useUser } from '../context/UserContext'
-import { supabase } from '../supabaseClient'
+import { api } from '../services/api'
 
 export default function CartDrawer() {
   const {
@@ -21,6 +21,9 @@ export default function CartDrawer() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [note, setNote] = useState('')
+  const [province, setProvince] = useState('Thành phố Hồ Chí Minh')
+  const [district, setDistrict] = useState('')
+  const [address, setAddress] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'momo' | 'vnpay'>('cod')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [validationError, setValidationError] = useState(false)
@@ -33,11 +36,14 @@ export default function CartDrawer() {
   }, [user, checkoutStep, name, phone])
 
   const processCheckout = async () => {
-    if (!name || !phone) {
+    if (!name || !phone || !address || !district) {
       setValidationError(true)
       return
     }
     setValidationError(false)
+
+    const fullAddress = `${address}, ${district}, ${province}`
+    const noteWithAddress = `[Địa chỉ: ${fullAddress}] ${note || ''}`
 
     if (paymentMethod === 'cod') {
       setIsSubmitting(true)
@@ -62,17 +68,12 @@ export default function CartDrawer() {
       // Fire-and-forget database insertion so it doesn't block the UI transition
       const insertOrder = async () => {
         try {
-          const { error } = await supabase.from('orders').insert([
-            {
-              client_name: name,
-              client_phone: phone,
-              note: `[COD] [Mã DH: ${orderCode}] ${note || ''}`,
-              items: cartItems,
-            }
-          ])
-          if (error) {
-            console.error('Error inserting order to Supabase:', error)
-          }
+          await api.orders.create({
+            client_name: name,
+            client_phone: phone,
+            note: `[COD] [Mã DH: ${orderCode}] ${noteWithAddress}`,
+            items: cartItems,
+          })
         } catch (err) {
           console.error('Error during checkout submission:', err)
         }
@@ -90,7 +91,7 @@ export default function CartDrawer() {
       localStorage.setItem('imperial_skincare_pending_order', JSON.stringify({
         name,
         phone,
-        note,
+        note: noteWithAddress,
         items: cartItems,
         method: 'momo',
         code,
@@ -104,7 +105,7 @@ export default function CartDrawer() {
       localStorage.setItem('imperial_skincare_pending_order', JSON.stringify({
         name,
         phone,
-        note,
+        note: noteWithAddress,
         items: cartItems,
         method: 'vnpay',
         code,
@@ -129,6 +130,9 @@ export default function CartDrawer() {
       setName('')
       setPhone('')
       setNote('')
+      setProvince('Thành phố Hồ Chí Minh')
+      setDistrict('')
+      setAddress('')
       setPaymentMethod('cod')
     }, 300)
   }
@@ -304,9 +308,69 @@ export default function CartDrawer() {
                     />
                   </div>
 
+                  {/* Province Selection */}
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="client-province" className="label-caps text-xs text-primary font-semibold">
+                      Tỉnh / Thành Phố <span className="text-secondary">*</span>
+                    </label>
+                    <select
+                      id="client-province"
+                      value={province}
+                      onChange={(e) => setProvince(e.target.value)}
+                      className="w-full h-12 px-4 border border-outline-variant bg-transparent focus:outline-none focus:border-primary text-body-md text-primary font-sans cursor-pointer"
+                    >
+                      <option value="Thành phố Hồ Chí Minh">Thành phố Hồ Chí Minh</option>
+                      <option value="Thành phố Hà Nội">Thành phố Hà Nội</option>
+                      <option value="Thành phố Đà Nẵng">Thành phố Đà Nẵng</option>
+                      <option value="Tỉnh Bình Dương">Tỉnh Bình Dương</option>
+                      <option value="Tỉnh Đồng Nai">Tỉnh Đồng Nai</option>
+                      <option value="Tỉnh Bà Rịa - Vũng Tàu">Tỉnh Bà Rịa - Vũng Tàu</option>
+                    </select>
+                  </div>
+
+                  {/* District Input */}
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="client-district" className="label-caps text-xs text-primary font-semibold">
+                      Quận / Huyện <span className="text-secondary">*</span>
+                    </label>
+                    <input
+                      id="client-district"
+                      type="text"
+                      value={district}
+                      onChange={(e) => {
+                        setDistrict(e.target.value)
+                        if (validationError && e.target.value) setValidationError(false)
+                      }}
+                      placeholder="Ví dụ: Quận 1 hoặc Huyện Bình Chánh"
+                      className={`w-full h-12 px-4 border bg-transparent focus:outline-none focus:border-primary text-body-md ${
+                        validationError && !district ? 'border-red-500/80 focus:border-red-500 bg-red-500/[0.01]' : 'border-outline-variant'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Address Detail Input */}
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="client-address" className="label-caps text-xs text-primary font-semibold">
+                      Địa chỉ chi tiết (Số nhà, Tên đường, Phường/Xã) <span className="text-secondary">*</span>
+                    </label>
+                    <input
+                      id="client-address"
+                      type="text"
+                      value={address}
+                      onChange={(e) => {
+                        setAddress(e.target.value)
+                        if (validationError && e.target.value) setValidationError(false)
+                      }}
+                      placeholder="Ví dụ: 123 Đường Nguyễn Huệ, Phường Bến Nghé"
+                      className={`w-full h-12 px-4 border bg-transparent focus:outline-none focus:border-primary text-body-md ${
+                        validationError && !address ? 'border-red-500/80 focus:border-red-500 bg-red-500/[0.01]' : 'border-outline-variant'
+                      }`}
+                    />
+                  </div>
+
                   {validationError && (
                     <div className="bg-red-500/5 border border-red-500/20 text-red-500 text-xs p-3.5 rounded leading-relaxed text-center font-semibold">
-                      * Vui lòng điền Họ tên và Số điện thoại nhận hàng!
+                      * Vui lòng nhập đầy đủ Họ tên, Số điện thoại và Địa chỉ giao nhận hàng!
                     </div>
                   )}
 

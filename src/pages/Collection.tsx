@@ -1,8 +1,10 @@
 import { useMemo, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../supabaseClient'
+import { motion, AnimatePresence } from 'framer-motion'
+import { api } from '../services/api'
 
-const products = [
+// Fallback hardcoded data in case API connection fails
+const FALLBACK_PRODUCTS = [
   {
     slug: 'zayin-rare-elements-vital-facial-essence',
     name: 'Zayin Rare Elements Vital Facial Essence',
@@ -76,17 +78,21 @@ const normalizeType = (value: string) => {
 }
 
 export default function Collection() {
-  const [productsList, setProductsList] = useState(products)
+  const [productsList, setProductsList] = useState(FALLBACK_PRODUCTS)
+  const [loading, setLoading] = useState(true)
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
+  const [sortBy, setSortBy] = useState('featured')
 
   useEffect(() => {
     let active = true
     async function fetchProducts() {
+      setLoading(true)
       try {
-        const { data, error } = await supabase.from('products').select('*')
+        const data = await api.products.getAll()
         if (!active) return
-        if (data && !error) {
-          const mapped = data.map((dbProduct: any) => {
-            const volumeLine = dbProduct.info ? dbProduct.info.split('\n').find((l: string) => l.toLowerCase().includes('dung tích')) : ''
+        if (data && data.length > 0) {
+          const mapped = data.map((dbProduct) => {
+            const volumeLine = dbProduct.info ? dbProduct.info.split('\n').find((l) => l.toLowerCase().includes('dung tích')) : ''
             const volume = volumeLine ? volumeLine.split(':')[1]?.trim() || '' : ''
             const typeDisplay = volume ? `${dbProduct.type} · ${volume}` : dbProduct.type
 
@@ -101,7 +107,10 @@ export default function Collection() {
           setProductsList(mapped)
         }
       } catch (err) {
-        console.error('Error fetching products from Supabase:', err)
+        console.error('Error fetching products from API:', err)
+        // Fallback is already set in state
+      } finally {
+        if (active) setLoading(false)
       }
     }
     fetchProducts()
@@ -124,14 +133,22 @@ export default function Collection() {
   }, [minLimit, maxLimit])
 
   const filteredProducts = useMemo(() => {
-    return productsList.filter((product) => {
+    let list = productsList.filter((product) => {
       const type = normalizeType(product.type)
       const priceValue = parsePriceValue(product.price)
       const matchesType = selectedTypes.length === 0 || selectedTypes.includes(type)
       const matchesPrice = priceValue >= priceMin && priceValue <= priceMax
       return matchesType && matchesPrice
     })
-  }, [productsList, priceMax, priceMin, selectedTypes])
+
+    if (sortBy === 'price-asc') {
+      list = [...list].sort((a, b) => parsePriceValue(a.price) - parsePriceValue(b.price))
+    } else if (sortBy === 'price-desc') {
+      list = [...list].sort((a, b) => parsePriceValue(b.price) - parsePriceValue(a.price))
+    }
+
+    return list
+  }, [productsList, priceMax, priceMin, selectedTypes, sortBy])
 
   const toggleType = (type: string) => {
     setSelectedTypes((prev) =>
@@ -139,28 +156,114 @@ export default function Collection() {
     )
   }
 
+  const renderFiltersContent = () => (
+    <div className="space-y-10">
+      <div>
+        <h3 className="font-sans font-semibold text-xs uppercase tracking-widest text-primary mb-6">Loại Sản Phẩm</h3>
+        <ul className="space-y-4 font-sans text-sm text-on-surface-variant">
+          {typeOptions.map((label) => {
+            const checked = selectedTypes.includes(label)
+            return (
+              <li key={label} className="flex items-center group">
+                <label className="flex items-center cursor-pointer select-none w-full">
+                  <span className={`w-4 h-4 border mr-3 flex items-center justify-center transition-colors ${checked ? 'border-secondary bg-secondary/10' : 'border-outline group-hover:border-secondary'}`}>
+                    <span className={`text-[12px] text-secondary transition-opacity ${checked ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'}`}>✓</span>
+                  </span>
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={checked}
+                    onChange={() => toggleType(label)}
+                  />
+                  <span className="group-hover:text-primary transition-colors">{label}</span>
+                </label>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+      <hr className="border-outline-variant/30" />
+      <div>
+        <h3 className="font-sans font-semibold text-xs uppercase tracking-widest text-primary mb-6">Thương Hiệu</h3>
+        <ul className="space-y-4 font-sans text-sm text-on-surface-variant">
+          <li className="flex items-center">
+            <div className="w-4 h-4 border border-secondary bg-secondary/10 mr-3 flex items-center justify-center">
+              <span className="text-[12px] text-secondary">✓</span>
+            </div>
+            <span className="text-primary font-medium">Le Laffé</span>
+          </li>
+        </ul>
+      </div>
+      <hr className="border-outline-variant/30" />
+      <div>
+        <h3 className="font-sans font-semibold text-xs uppercase tracking-widest text-primary mb-6">Mức Giá</h3>
+        <div className="mt-6 space-y-5">
+          <div className="relative w-full h-1 bg-surface-container-high rounded">
+            <div
+              className="absolute top-0 h-full bg-secondary rounded"
+              style={{
+                left: `${((priceMin - minLimit) / priceSpan) * 100}%`,
+                right: `${100 - ((priceMax - minLimit) / priceSpan) * 100}%`,
+              }}
+            />
+          </div>
+          <div className="relative h-6">
+            <input
+              type="range"
+              min={minLimit}
+              max={maxLimit}
+              step={100000}
+              value={priceMin}
+              onChange={(event) => {
+                const next = Math.min(Number(event.target.value), priceMax - 100000)
+                setPriceMin(next)
+              }}
+              className="price-range absolute w-full h-6 cursor-pointer"
+            />
+            <input
+              type="range"
+              min={minLimit}
+              max={maxLimit}
+              step={100000}
+              value={priceMax}
+              onChange={(event) => {
+                const next = Math.max(Number(event.target.value), priceMin + 100000)
+                setPriceMax(next)
+              }}
+              className="price-range absolute w-full h-6 cursor-pointer"
+            />
+          </div>
+        </div>
+        <div className="flex justify-between text-sm text-on-surface-variant font-sans mt-4">
+          <span>{formatPrice(priceMin)}</span>
+          <span>{formatPrice(priceMax)}</span>
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <div>
-      <section className="pt-8 pb-section-gap">
+      <section className="pt-8 pb-16 md:pb-24">
         <div className="container-wide">
-          <nav className="flex text-sm text-on-surface-variant mb-12 font-body-md">
+          <nav className="flex text-xs text-on-surface-variant mb-8 font-sans uppercase tracking-wider">
             <Link className="hover:text-primary transition-colors" to="/">Trang chủ</Link>
             <span className="mx-2">/</span>
-            <Link className="hover:text-primary transition-colors" to="/brand">Thương hiệu</Link>
+            <Link className="hover:text-primary transition-colors" to="/collection">Thương hiệu</Link>
             <span className="mx-2">/</span>
             <span className="text-primary font-medium">Le Laffé</span>
           </nav>
 
-          <section className="mb-section-gap">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
+          <section className="mb-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div className="pr-0 lg:pr-12">
-                <h1 className="font-headline-lg-mobile md:font-display-lg text-headline-lg-mobile md:text-display-lg text-primary mb-6">
+                <h1 className="font-serif text-3xl md:text-5xl text-primary mb-6 leading-tight">
                   Le Laffé
                 </h1>
-                <p className="font-body-lg text-body-lg text-on-surface-variant mb-4 leading-relaxed">
+                <p className="font-sans text-base md:text-lg text-on-surface-variant mb-4 leading-relaxed">
                   A minimalist approach to high-performance skincare, Le Laffé represents the zenith of bio-cellular research. Utilizing the proprietary Cellular Secretome technology and the unparalleled Platinum StemCell solution, we deliver targeted, transformative results for discerning skin.
                 </p>
-                <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                <p className="font-sans text-sm text-on-surface-variant leading-relaxed">
                   Embrace the quiet luxury of profound cellular renewal. Each formulation is a testament to scientific precision and editorial elegance, designed to awaken your skin's inherent vitality.
                 </p>
               </div>
@@ -174,137 +277,145 @@ export default function Collection() {
             </div>
           </section>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-gutter lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-16">
+            {/* Desktop Sidebar (Left side) */}
             <aside className="hidden lg:block lg:col-span-1 space-y-10 border-r border-outline-variant/30 pr-8">
-              <div>
-                <h3 className="font-label-caps text-label-caps uppercase text-primary mb-6 tracking-widest">Loại Sản Phẩm</h3>
-                <ul className="space-y-4 font-body-md text-body-md text-on-surface-variant">
-                  {typeOptions.map((label) => {
-                    const checked = selectedTypes.includes(label)
-                    return (
-                      <li key={label} className="flex items-center group">
-                        <label className="flex items-center cursor-pointer select-none">
-                          <span className={`w-4 h-4 border mr-3 flex items-center justify-center transition-colors ${checked ? 'border-secondary bg-secondary/10' : 'border-outline group-hover:border-secondary'}`}>
-                            <span className={`text-[12px] text-secondary transition-opacity ${checked ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'}`}>✓</span>
-                          </span>
-                          <input
-                            type="checkbox"
-                            className="sr-only"
-                            checked={checked}
-                            onChange={() => toggleType(label)}
-                          />
-                          <span className="group-hover:text-primary transition-colors">{label}</span>
-                        </label>
-                      </li>
-                    )}
-                  )}
-                </ul>
-              </div>
-              <hr className="border-outline-variant/30" />
-              <div>
-                <h3 className="font-label-caps text-label-caps uppercase text-primary mb-6 tracking-widest">Thương Hiệu</h3>
-                <ul className="space-y-4 font-body-md text-body-md text-on-surface-variant">
-                  <li className="flex items-center">
-                    <div className="w-4 h-4 border border-secondary bg-secondary/10 mr-3 flex items-center justify-center">
-                      <span className="text-[12px] text-secondary">✓</span>
-                    </div>
-                    <span className="text-primary font-medium">Le Laffé</span>
-                  </li>
-                </ul>
-              </div>
-              <hr className="border-outline-variant/30" />
-              <div>
-                <h3 className="font-label-caps text-label-caps uppercase text-primary mb-6 tracking-widest">Mức Giá</h3>
-                <div className="mt-6 space-y-5">
-                  <div className="relative w-full h-1 bg-surface-container-high rounded">
-                    <div
-                      className="absolute top-0 h-full bg-secondary rounded"
-                      style={{
-                        left: `${((priceMin - minLimit) / priceSpan) * 100}%`,
-                        right: `${100 - ((priceMax - minLimit) / priceSpan) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <div className="relative h-6">
-                    <input
-                      type="range"
-                      min={minLimit}
-                      max={maxLimit}
-                      step={100000}
-                      value={priceMin}
-                      onChange={(event) => {
-                        const next = Math.min(Number(event.target.value), priceMax - 100000)
-                        setPriceMin(next)
-                      }}
-                      className="price-range absolute w-full h-6 cursor-pointer"
-                    />
-                    <input
-                      type="range"
-                      min={minLimit}
-                      max={maxLimit}
-                      step={100000}
-                      value={priceMax}
-                      onChange={(event) => {
-                        const next = Math.max(Number(event.target.value), priceMin + 100000)
-                        setPriceMax(next)
-                      }}
-                      className="price-range absolute w-full h-6 cursor-pointer"
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-between text-sm text-on-surface-variant font-body-md mt-4">
-                  <span>{formatPrice(priceMin)}</span>
-                  <span>{formatPrice(priceMax)}</span>
-                </div>
-              </div>
+              {renderFiltersContent()}
             </aside>
 
+            {/* Products List (Right side) */}
             <div className="lg:col-span-3">
               <div className="flex justify-between items-center mb-8 border-b border-outline-variant/30 pb-4">
-                <span className="text-sm text-on-surface-variant font-body-md">{filteredProducts.length} Sản phẩm</span>
-                <div className="flex items-center space-x-2 text-sm">
-                  <span className="text-on-surface-variant">Sắp xếp theo:</span>
-                  <select className="bg-transparent border-none text-primary font-medium focus:ring-0 cursor-pointer p-0 pr-4">
-                    <option>Được đề xuất</option>
-                    <option>Giá: Thấp đến Cao</option>
-                    <option>Giá: Cao đến Thấp</option>
-                  </select>
+                <span className="text-sm text-on-surface-variant font-sans">{filteredProducts.length} Sản phẩm</span>
+                
+                <div className="flex items-center gap-4">
+                  {/* Mobile Filter Toggle Button */}
+                  <button
+                    onClick={() => setMobileFilterOpen(true)}
+                    className="lg:hidden flex items-center gap-2 text-xs uppercase tracking-wider font-semibold text-primary border border-outline-variant/60 px-4 py-2 hover:bg-surface-container-low transition-colors"
+                  >
+                    <span>Bộ lọc</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M4 6h16M4 12h12M4 18h6" />
+                    </svg>
+                  </button>
+
+                  {/* Sorting dropdown */}
+                  <div className="flex items-center space-x-2 text-sm">
+                    <span className="text-on-surface-variant hidden sm:inline">Sắp xếp:</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="bg-transparent border-none text-primary font-semibold focus:ring-0 cursor-pointer p-0 pr-4 text-sm"
+                    >
+                      <option value="featured">Đề xuất</option>
+                      <option value="price-asc">Giá: Thấp đến Cao</option>
+                      <option value="price-desc">Giá: Cao đến Thấp</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-                {filteredProducts.map((product) => (
-                  <article key={product.slug} className="group flex flex-col h-full">
-                    <div className="relative aspect-square mb-6 border border-outline-variant/30 flex items-center justify-center p-2 overflow-hidden">
-                      <img alt={product.name} className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105" src={product.image} />
-                      {product.tag && (
-                        <div className="absolute top-4 left-4">
-                          <span className="bg-primary/5 text-primary text-[10px] px-2 py-1 uppercase tracking-wider font-semibold border border-outline-variant/30">
-                            {product.tag}
-                          </span>
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-                    <div className="flex flex-col flex-grow text-center">
-                      <span className="font-label-caps text-label-caps text-on-surface-variant tracking-widest mb-2">Le Laffé</span>
-                      <h2 className="font-headline-md text-[18px] leading-tight text-primary mb-2 flex-grow">{product.name}</h2>
-                      <p className="text-sm text-on-surface-variant mb-4">{product.type}</p>
-                      <p className="font-body-md text-body-md text-secondary mb-6">{product.price}</p>
-                      <Link
-                        to={`/product/${product.slug}`}
-                        className="mt-auto w-full border border-secondary text-secondary hover:bg-secondary hover:text-surface py-3 text-sm tracking-widest font-label-caps uppercase transition-colors duration-300"
-                      >
-                        Xem chi tiết
-                      </Link>
-                    </div>
-                  </article>
-                ))}
-              </div>
+              {loading ? (
+                <div className="py-28 flex flex-col items-center justify-center text-center bg-surface-container-low/30 border border-outline-variant/20 rounded-xl shadow-ambient-sm">
+                  {/* Premium circular loader (Cocoon style) */}
+                  <div className="w-10 h-10 border-[3.5px] border-[#C8A96A]/20 border-t-[#C8A96A] rounded-full animate-spin mb-6 mx-auto" />
+                  <p className="font-sans text-xs uppercase tracking-widest text-[#C8A96A] font-semibold mb-2">Imperial Skincare</p>
+                  <p className="font-sans text-sm text-on-surface-variant/80 font-medium">Đang tải thông tin sản phẩm...</p>
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="py-24 text-center">
+                  <span className="text-3xl block mb-4">✦</span>
+                  <p className="font-serif text-lg text-primary mb-2">Không tìm thấy sản phẩm phù hợp</p>
+                  <p className="font-sans text-sm text-on-surface-variant/70">Vui lòng điều chỉnh lại mức giá hoặc các bộ lọc đang chọn.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 md:gap-x-8 gap-y-8 md:gap-y-16">
+                  {filteredProducts.map((product) => (
+                    <article key={product.slug} className="group flex flex-col h-full bg-surface-container-lowest md:bg-transparent p-3 md:p-0 border border-outline-variant/20 md:border-none rounded-lg shadow-ambient-sm md:shadow-none transition-all duration-300 hover:shadow-ambient">
+                      <div className="relative aspect-square mb-4 md:mb-6 border border-outline-variant/20 md:border-outline-variant/30 flex items-center justify-center p-2 overflow-hidden bg-white rounded-md">
+                        <img
+                          alt={product.name}
+                          className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+                          src={product.image}
+                        />
+                        {product.tag && (
+                          <div className="absolute top-2 left-2 md:top-4 md:left-4">
+                            <span className="bg-primary/5 text-primary text-[8px] md:text-[10px] px-1.5 py-0.5 md:px-2 md:py-1 uppercase tracking-wider font-semibold border border-outline-variant/30">
+                              {product.tag}
+                            </span>
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </div>
+                      <div className="flex flex-col flex-grow text-center">
+                        <span className="font-sans text-[8px] md:text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 md:mb-2">Le Laffé</span>
+                        <h2 className="font-serif text-sm md:text-lg leading-snug md:leading-tight text-primary mb-1 md:mb-2 flex-grow line-clamp-2 min-h-[36px] md:min-h-[48px]">{product.name}</h2>
+                        <p className="text-[10px] md:text-xs text-on-surface-variant mb-2 md:mb-4">{product.type}</p>
+                        <p className="font-sans text-xs md:text-sm text-secondary mb-4 md:mb-6 font-semibold">{product.price}</p>
+                        <Link
+                          to={`/product/${product.slug}`}
+                          className="mt-auto w-full border border-secondary text-secondary hover:bg-secondary hover:text-white py-2 md:py-3 text-[10px] md:text-xs tracking-widest font-sans uppercase transition-colors duration-300 font-semibold text-center block"
+                        >
+                          Xem chi tiết
+                        </Link>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
+
+      {/* Mobile Filters Drawer Overlay */}
+      <AnimatePresence>
+        {mobileFilterOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileFilterOpen(false)}
+              className="fixed inset-0 bg-black z-[110] lg:hidden"
+            />
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+              className="fixed right-0 top-0 bottom-0 w-full max-w-[360px] bg-background z-[111] shadow-[0_0_50px_rgba(0,0,0,0.15)] flex flex-col lg:hidden border-l border-outline-variant/30"
+            >
+              <div className="p-6 border-b border-outline-variant flex items-center justify-between">
+                <h2 className="font-serif text-xl text-primary">Bộ lọc sản phẩm</h2>
+                <button
+                  onClick={() => setMobileFilterOpen(false)}
+                  className="w-10 h-10 flex items-center justify-center text-primary/60 hover:text-primary transition-colors"
+                  aria-label="Đóng bộ lọc"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
+                {renderFiltersContent()}
+              </div>
+              <div className="p-6 border-t border-outline-variant">
+                <button
+                  onClick={() => setMobileFilterOpen(false)}
+                  className="w-full bg-primary text-on-primary py-4 text-xs uppercase tracking-widest font-semibold hover:bg-secondary transition-colors"
+                >
+                  Áp dụng bộ lọc ({filteredProducts.length} sản phẩm)
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
