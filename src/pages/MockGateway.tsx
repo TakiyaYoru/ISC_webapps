@@ -44,7 +44,7 @@ export default function MockGateway() {
 
     // Simulate 2 seconds network delay
     setTimeout(() => {
-      const methodLabel = method === 'momo' ? 'MoMo' : 'VNPAY'
+      const methodLabel = method === 'momo' ? 'MoMo' : (method === 'vnpay' ? 'VNPAY' : 'AlePay')
       
       // Fire-and-forget database insertion so it doesn't block navigation if it hangs or fails
       const insertOrder = async () => {
@@ -150,7 +150,7 @@ export default function MockGateway() {
                 </div>
                 <span className="text-[10px] bg-white/20 px-2.5 py-1 rounded uppercase tracking-wider font-semibold">MoMo QR</span>
               </div>
-            ) : (
+            ) : method === 'vnpay' ? (
               <div className="bg-[#005BAA] text-white p-5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 bg-white text-[#005BAA] rounded-lg flex items-center justify-center font-bold text-[9px] tracking-tighter uppercase">
@@ -162,6 +162,19 @@ export default function MockGateway() {
                   </div>
                 </div>
                 <span className="text-[10px] bg-white/20 px-2.5 py-1 rounded uppercase tracking-wider font-semibold">VNPAY-QR</span>
+              </div>
+            ) : (
+              <div className="bg-[#FF4500] text-white p-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-white text-[#FF4500] rounded-lg flex items-center justify-center font-bold text-[9px] tracking-tighter uppercase">
+                    alepay
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-base leading-tight font-serif">Thẻ Quốc Tế / Trả Góp</h4>
+                    <p className="text-xs opacity-75">Cổng thanh toán AlePay</p>
+                  </div>
+                </div>
+                <span className="text-[10px] bg-white/20 px-2.5 py-1 rounded uppercase tracking-wider font-semibold">Visa / Master</span>
               </div>
             )}
 
@@ -179,18 +192,23 @@ export default function MockGateway() {
               ) : (
                 <>
                   <div className="bg-white p-5 border border-gray-200 rounded-xl shadow-sm mb-6">
-                    {/* Simulated SVG QR Code */}
+                    {/* Simulated SVG QR Code - Changed to Black */}
                     <svg width="180" height="180" viewBox="0 0 29 29" shapeRendering="crispEdges">
                       <path fill="#ffffff" d="M0,0h29v29h-29z" />
                       {method === 'momo' ? (
                         <>
-                          <path fill="#a50064" d="M0,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zm22,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,8h3v1h-3zm10,0h3v1h-3zM0,22h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,18h1v3h-1zM2,2h3v3h-3zM24,2h3v3h-3zM2,24h3v3h-3z" />
-                          <path fill="#a50064" d="M9,2h2v2h-2z M12,4h3v1h-3z M15,2h2v3h-2z M9,6h4v1h-4z M18,9h2v2h-2z M22,9h3v2h-3z M9,11h3v2h-3z M14,12h2v3h-2z M10,15h3v2h-3z M17,16h4v2h-4z M20,20h3v3h-3z M24,19h3v2h-3z M25,23h2v2h-2z" />
+                          <path fill="#000000" d="M0,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zm22,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,8h3v1h-3zm10,0h3v1h-3zM0,22h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,18h1v3h-1zM2,2h3v3h-3zM24,2h3v3h-3zM2,24h3v3h-3z" />
+                          <path fill="#000000" d="M9,2h2v2h-2z M12,4h3v1h-3z M15,2h2v3h-2z M9,6h4v1h-4z M18,9h2v2h-2z M22,9h3v2h-3z M9,11h3v2h-3z M14,12h2v3h-2z M10,15h3v2h-3z M17,16h4v2h-4z M20,20h3v3h-3z M24,19h3v2h-3z M25,23h2v2h-2z" />
+                        </>
+                      ) : method === 'vnpay' ? (
+                        <>
+                          <path fill="#000000" d="M0,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zm22,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,8h3v1h-3zm10,0h3v1h-3zM0,22h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,18h1v3h-1zM2,2h3v3h-3zM24,2h3v3h-3zM2,24h3v3h-3z" />
+                          <path fill="#000000" d="M9,3h3v2h-3z M13,2h3v2h-3z M17,4h2v2h-2z M10,9h4v2h-4z M15,10h3v2h-3z M20,11h3v2h-3z M11,14h3v1h-3z M16,14h2v3h-2z M9,18h4v2h-4z M15,18h3v3h-3z M19,20h4v2h-4z M24,22h3v2h-3z" />
                         </>
                       ) : (
                         <>
-                          <path fill="#005baa" d="M0,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zm22,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,8h3v1h-3zm10,0h3v1h-3zM0,22h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,18h1v3h-1zM2,2h3v3h-3zM24,2h3v3h-3zM2,24h3v3h-3z" />
-                          <path fill="#005baa" d="M9,3h3v2h-3z M13,2h3v2h-3z M17,4h2v2h-2z M10,9h4v2h-4z M15,10h3v2h-3z M20,11h3v2h-3z M11,14h3v1h-3z M16,14h2v3h-2z M9,18h4v2h-4z M15,18h3v3h-3z M19,20h4v2h-4z M24,22h3v2h-3z" />
+                          <path fill="#000000" d="M0,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zm22,0h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,8h3v1h-3zm10,0h3v1h-3zM0,22h7v1h-7zm0,1h1v5h1v-5h1v5h1v-5h1v5h1v-5h1v7h-7zM8,18h1v3h-1zM2,2h3v3h-3zM24,2h3v3h-3zM2,24h3v3h-3z" />
+                          <path fill="#000000" d="M10,2h4v2h-4z M16,3h2v3h-2z M9,7h3v1h-3z M15,8h4v2h-4z M20,10h3v3h-3z M10,13h4v2h-4z M17,14h2v2h-2z M9,19h3v2h-3z M14,18h4v2h-4z M21,21h3v2h-3z M24,23h2v2h-2z" />
                         </>
                       )}
                     </svg>
@@ -200,15 +218,17 @@ export default function MockGateway() {
                     <p className="text-xs text-gray-500 font-medium leading-relaxed">
                       {method === 'momo' ? (
                         <>Sử dụng tính năng quét mã QR trên ứng dụng <strong>MoMo</strong> để quét mã chuyển tiền tự động.</>
-                      ) : (
+                      ) : method === 'vnpay' ? (
                         <>Sử dụng tính năng <strong>QR Pay</strong> trên ứng dụng ngân hàng hoặc ví VNPAY của bạn để quét mã thanh toán.</>
+                      ) : (
+                        <>Nhập thông tin thẻ <strong>Visa/Mastercard</strong> hoặc đăng ký trả góp thông qua cổng thanh toán bảo mật AlePay.</>
                       )}
                     </p>
                     
                     <button
                       onClick={handlePaymentSuccess}
                       className={`w-full py-3.5 px-6 rounded-lg text-white font-semibold text-sm transition-all duration-300 shadow-md ${
-                        method === 'momo' ? 'bg-[#A50064] hover:bg-[#860051]' : 'bg-[#005BAA] hover:bg-[#004A8A]'
+                        method === 'momo' ? 'bg-[#A50064] hover:bg-[#860051]' : method === 'vnpay' ? 'bg-[#005BAA] hover:bg-[#004A8A]' : 'bg-[#FF4500] hover:bg-[#CC3700]'
                       }`}
                     >
                       Giả lập thanh toán thành công (Demo)

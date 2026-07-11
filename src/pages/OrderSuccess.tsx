@@ -44,6 +44,7 @@ export default function OrderSuccess() {
   const getMethodLabel = (m: string) => {
     if (m === 'momo') return 'Ví điện tử MoMo (Đã thanh toán)'
     if (m === 'vnpay') return 'Cổng thanh toán VNPAY (Đã thanh toán)'
+    if (m === 'alepay') return 'Thẻ quốc tế AlePay (Đã thanh toán)'
     return 'Thanh toán khi nhận hàng (COD)'
   }
 

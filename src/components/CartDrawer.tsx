@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../context/CartContext'
 import { useUser } from '../context/UserContext'
 import { api } from '../services/api'
+import { paymentService } from '../services/paymentService'
 
 export default function CartDrawer() {
   const {
@@ -24,7 +25,7 @@ export default function CartDrawer() {
   const [province, setProvince] = useState('Thành phố Hồ Chí Minh')
   const [district, setDistrict] = useState('')
   const [address, setAddress] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'momo' | 'vnpay'>('cod')
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'momo' | 'vnpay'| 'alepay'>('cod')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [validationError, setValidationError] = useState(false)
 
@@ -86,34 +87,30 @@ export default function CartDrawer() {
         setCheckoutStep('success')
         clearCart()
       }, 600)
-    } else if (paymentMethod === 'momo') {
-      const code = `MOMO-${Math.floor(100000 + Math.random() * 900000)}`
-      localStorage.setItem('imperial_skincare_pending_order', JSON.stringify({
-        name,
-        phone,
-        note: noteWithAddress,
-        items: cartItems,
-        method: 'momo',
-        code,
-        total: cartTotal,
-      }))
-      setCartOpen(false)
-      // Redirect to external simulated gateway page
-      window.location.href = `/payment/gateway?method=momo`
-    } else if (paymentMethod === 'vnpay') {
-      const code = `VNPAY-${Math.floor(100000 + Math.random() * 900000)}`
-      localStorage.setItem('imperial_skincare_pending_order', JSON.stringify({
-        name,
-        phone,
-        note: noteWithAddress,
-        items: cartItems,
-        method: 'vnpay',
-        code,
-        total: cartTotal,
-      }))
-      setCartOpen(false)
-      // Redirect to external simulated gateway page
-      window.location.href = `/payment/gateway?method=vnpay`
+    } else {
+      // ONLINE PAYMENT FLOW (MOMO, VNPAY, ALEPAY)
+      setIsSubmitting(true)
+      
+      try {
+        // Send payload to the Payment Service
+        const checkoutUrl = await paymentService.createCheckoutUrl({
+          name,
+          phone,
+          note: noteWithAddress, 
+          items: cartItems,
+          total: cartTotal,
+          method: paymentMethod
+        })
+
+        setCartOpen(false)
+        
+        // Redirect the user to the gateway URL
+        window.location.href = checkoutUrl
+      } catch (error) {
+        console.error('Error initializing payment:', error)
+        setIsSubmitting(false)
+        // Add logic to display error toast/alert to the user here if needed
+      }
     }
   }
 
@@ -449,6 +446,22 @@ export default function CartDrawer() {
                           {paymentMethod === 'vnpay' && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
                         </div>
                       </div>
+                      {/* AlePay */}
+                      <div 
+                        onClick={() => setPaymentMethod('alepay')}
+                        className={`flex gap-4 p-4 border cursor-pointer transition-all items-center ${paymentMethod === 'alepay' ? 'border-primary bg-primary/[0.03]' : 'border-outline-variant hover:border-primary/50'}`}
+                      >
+                        <div className="w-9 h-9 rounded bg-[#FF4500] text-white flex items-center justify-center font-bold text-[9px] tracking-tighter flex-shrink-0 uppercase">
+                          alepay
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-body-md text-sm font-semibold text-primary">AlePay</p>
+                          <p className="text-xs text-on-surface-variant/70 truncate">Chuyển hướng đến cổng thanh toán AlePay.</p>
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentMethod === 'alepay' ? 'border-primary' : 'border-outline'}`}>
+                          {paymentMethod === 'alepay' && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </form>
@@ -537,7 +550,7 @@ export default function CartDrawer() {
                         Đang xử lý...
                       </>
                     ) : (
-                      paymentMethod === 'cod' ? 'Xác nhận đặt hàng (COD)' : (paymentMethod === 'momo' ? 'Thanh toán qua ví MoMo' : 'Thanh toán qua cổng VNPAY')
+                      paymentMethod === 'cod' ? 'Xác nhận đặt hàng (COD)' : (paymentMethod === 'momo' ? 'Thanh toán qua ví MoMo' : (paymentMethod === 'vnpay' ? 'Thanh toán qua cổng VNPAY' : 'Thanh toán qua cổng AlePay'))
                     )}
                   </button>
                   <button
