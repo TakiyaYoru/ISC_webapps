@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api'
 import { useCart } from '../context/CartContext'
+import LoadingScreen from '../components/LoadingScreen'
 
 const heroImages = [
   'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_001.png',
@@ -38,6 +39,7 @@ export default function Home() {
   const [articles, setArticles] = useState(blogArticlesDefault)
   const [bestSellers, setBestSellers] = useState<any[]>([])
   const [currentHero, setCurrentHero] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Carousel slider refs & states
   const productSliderRef = useRef<HTMLDivElement | null>(null)
@@ -80,7 +82,13 @@ export default function Home() {
         console.error('Error fetching products from API:', err)
       }
     }
-    loadHomeData()
+    async function init() {
+      setIsLoading(true)
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 1000))
+      await Promise.all([loadHomeData(), minDelay])
+      if (active) setIsLoading(false)
+    }
+    init()
     return () => {
       active = false
     }
@@ -175,6 +183,10 @@ export default function Home() {
         setProductScrollProgress(progress)
       }
     }
+  }
+
+  if (isLoading) {
+    return <LoadingScreen />
   }
 
   return (
