@@ -12,6 +12,7 @@ import PolicyPrivacy from './pages/PolicyPrivacy'
 import PolicyReturns from './pages/PolicyReturns'
 import PolicyPurchaseGuide from './pages/PolicyPurchaseGuide'
 import PolicyTerms from './pages/PolicyTerms'
+import PolicyPricing from './pages/PolicyPricing'
 import Contact from './pages/Contact'
 import MockGateway from './pages/MockGateway'
 import OrderSuccess from './pages/OrderSuccess'
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="/policy/returns" element={<PolicyReturns />} />
             <Route path="/policy/purchase-guide" element={<PolicyPurchaseGuide />} />
             <Route path="/policy/terms" element={<PolicyTerms />} />
+            <Route path="/policy/pricing" element={<PolicyPricing />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/account" element={<Account />} />

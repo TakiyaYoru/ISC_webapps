@@ -36,6 +36,9 @@ export default function Footer() {
             <Link to="/policy/terms" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
               Điều khoản dịch vụ
             </Link>
+            <Link to="/policy/pricing" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
+              Quy định về giá cả
+            </Link>
           </div>
 
           <div className="flex flex-col gap-3">
