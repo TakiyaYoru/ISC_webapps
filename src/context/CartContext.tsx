@@ -55,6 +55,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prev, { ...product, quantity }]
     })
     setCartOpen(true) // Open cart drawer automatically on adding
+    window.dispatchEvent(new CustomEvent('cart-item-added'))
   }, [])
 
   const removeFromCart = useCallback((slug: string) => {

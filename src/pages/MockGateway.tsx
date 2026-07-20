@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { supabase } from '../supabaseClient'
+import { api } from '../services/api'
 
 export default function MockGateway() {
   const [searchParams] = useSearchParams()
@@ -49,17 +49,12 @@ export default function MockGateway() {
       // Fire-and-forget database insertion so it doesn't block navigation if it hangs or fails
       const insertOrder = async () => {
         try {
-          const { error } = await supabase.from('orders').insert([
-            {
-              client_name: order.name,
-              client_phone: order.phone,
-              note: `[Đã thanh toán qua ${methodLabel} - Mã GD: ${order.code}] ${order.note || ''}`,
-              items: order.items,
-            }
-          ])
-          if (error) {
-            console.error('Error inserting order to Supabase:', error)
-          }
+          await api.orders.create({
+            client_name: order.name,
+            client_phone: order.phone,
+            note: `[Đã thanh toán qua ${methodLabel} - Mã GD: ${order.code}] ${order.note || ''}`,
+            items: order.items,
+          })
         } catch (err) {
           console.error('Error in gateway database insertion:', err)
         }
