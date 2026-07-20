@@ -44,6 +44,8 @@ export default function Home() {
   // Carousel slider refs & states
   const productSliderRef = useRef<HTMLDivElement | null>(null)
   const [productScrollProgress, setProductScrollProgress] = useState(0)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
 
   // Load dynamic data from api client
   useEffect(() => {
@@ -93,6 +95,15 @@ export default function Home() {
       active = false
     }
   }, [])
+
+  // Check scroll boundary on bestSellers load
+  useEffect(() => {
+    const el = productSliderRef.current
+    if (el) {
+      setCanScrollLeft(el.scrollLeft > 10)
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 10)
+    }
+  }, [bestSellers])
 
   // Auto scroll setup for Hero Header
   useEffect(() => {
@@ -173,7 +184,7 @@ export default function Home() {
     }
   }, [])
 
-  // Handle product scroll progress line
+  // Handle product scroll progress line & boundaries
   const handleProductScroll = () => {
     const el = productSliderRef.current
     if (el) {
@@ -182,6 +193,18 @@ export default function Home() {
         const progress = (el.scrollLeft / maxScroll) * 100
         setProductScrollProgress(progress)
       }
+      setCanScrollLeft(el.scrollLeft > 10)
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 10)
+    }
+  }
+
+  // Smooth scroll handler for PC navigation buttons
+  const handleScroll = (direction: 'left' | 'right') => {
+    const el = productSliderRef.current
+    if (el) {
+      const scrollAmount = direction === 'left' ? -320 : 320
+      el.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+      setTimeout(handleProductScroll, 400)
     }
   }
 
@@ -241,7 +264,33 @@ export default function Home() {
             </div>
 
             {/* Right aligned snap scroll list */}
-            <div className="lg:col-span-8 overflow-hidden relative">
+            <div className="lg:col-span-8 overflow-hidden relative group">
+              {/* Previous Button (PC only) */}
+              <button
+                onClick={() => handleScroll('left')}
+                className={`absolute left-2 top-[140px] -translate-y-1/2 z-10 w-9 h-14 bg-surface/90 border border-outline-variant/60 text-primary hidden lg:flex items-center justify-center transition-all duration-300 hover:bg-secondary hover:text-white rounded shadow-sm ${
+                  canScrollLeft ? 'opacity-100' : 'opacity-30 pointer-events-none'
+                }`}
+                aria-label="Previous product"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              {/* Next Button (PC only) */}
+              <button
+                onClick={() => handleScroll('right')}
+                className={`absolute right-2 top-[140px] -translate-y-1/2 z-10 w-9 h-14 bg-surface/90 border border-outline-variant/60 text-primary hidden lg:flex items-center justify-center transition-all duration-300 hover:bg-secondary hover:text-white rounded shadow-sm ${
+                  canScrollRight ? 'opacity-100' : 'opacity-30 pointer-events-none'
+                }`}
+                aria-label="Next product"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
               <div
                 ref={productSliderRef}
                 onScroll={handleProductScroll}
