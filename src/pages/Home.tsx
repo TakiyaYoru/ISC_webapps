@@ -283,9 +283,9 @@ export default function Home() {
           {slidesData.map((slide, idx) => {
             const isActive = currentHero === idx
             return (
-              <div key={idx} className="w-full shrink-0 snap-start flex flex-col md:flex-row min-h-[75vh] md:min-h-[80vh]">
+              <div key={idx} className="w-full shrink-0 snap-start flex flex-col md:flex-row min-h-[65vh] md:min-h-[80vh]">
                 {/* Photo Area */}
-                <div className="w-full md:w-1/2 aspect-[4/5] md:aspect-auto relative bg-surface-container-low overflow-hidden">
+                <div className="w-full md:w-1/2 aspect-[4/3] md:aspect-auto relative bg-surface-container-low overflow-hidden">
                   <img
                     src={slide.image}
                     alt={slide.title}
@@ -298,27 +298,27 @@ export default function Home() {
                 </div>
 
                 {/* Solid Color Content Block */}
-                <div className={`w-full md:w-1/2 ${slide.bgColor} ${slide.textColor} p-8 md:p-16 lg:p-24 flex flex-col justify-center items-start text-left relative overflow-hidden`}>
+                <div className={`w-full md:w-1/2 ${slide.bgColor} ${slide.textColor} p-6 md:p-16 lg:p-24 flex flex-col justify-center items-start text-left relative overflow-hidden`}>
                   {/* Staggered text fade/slide mix transitions */}
-                  <span className={`font-sans text-[10px] md:text-xs uppercase tracking-[0.2em] font-semibold opacity-80 mb-4 md:mb-6 transition-all duration-700 delay-100 transform ${
+                  <span className={`font-sans text-[10px] md:text-xs uppercase tracking-[0.2em] font-semibold opacity-80 mb-3 md:mb-6 transition-all duration-700 delay-100 transform ${
                     isActive ? 'opacity-80 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}>
                     {slide.tagline}
                   </span>
                   
-                  <h2 className={`font-serif text-3xl md:text-4xl lg:text-5xl leading-[1.1] mb-2 font-medium transition-all duration-700 delay-200 transform ${
+                  <h2 className={`font-serif text-2xl md:text-4xl lg:text-5xl leading-[1.1] mb-1 font-medium transition-all duration-700 delay-200 transform ${
                     isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}>
                     {slide.title}
                   </h2>
                   
-                  <h3 className={`font-serif italic text-2xl md:text-3xl mb-6 font-light opacity-90 transition-all duration-700 delay-300 transform ${
+                  <h3 className={`font-serif italic text-lg md:text-3xl mb-4 md:mb-6 font-light opacity-90 transition-all duration-700 delay-300 transform ${
                     isActive ? 'opacity-90 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}>
                     {slide.titleSuffix}
                   </h3>
                   
-                  <p className={`font-sans text-sm md:text-base leading-relaxed opacity-75 max-w-md mb-8 transition-all duration-700 delay-400 transform ${
+                  <p className={`font-sans text-xs md:text-base leading-relaxed opacity-75 max-w-md mb-6 md:mb-8 transition-all duration-700 delay-400 transform ${
                     isActive ? 'opacity-75 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}>
                     {slide.description}
@@ -329,7 +329,7 @@ export default function Home() {
                   }`}>
                     <Link
                       to={slide.link}
-                      className={`w-full sm:w-auto px-8 py-4 ${slide.btnClass} text-xs uppercase tracking-widest font-semibold transition-colors text-center rounded block`}
+                      className={`w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 ${slide.btnClass} text-xs uppercase tracking-widest font-semibold transition-colors text-center rounded block`}
                     >
                       XEM NGAY ➔
                     </Link>
@@ -356,17 +356,17 @@ export default function Home() {
       </section>
 
       {/* 2. Brand Logo Marquee Bar */}
-      <section className="py-6 md:py-10 bg-surface border-y border-outline-variant/40 overflow-hidden relative flex flex-col items-center justify-center">
+      <section className="py-4 md:py-10 bg-surface border-y border-outline-variant/40 overflow-hidden relative flex flex-col items-center justify-center">
         <div className="relative w-full flex items-center">
           <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-surface to-transparent z-10" />
           <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-surface to-transparent z-10" />
           <div className="flex whitespace-nowrap animate-marquee items-center text-primary w-max">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center">
-                <span className="mx-10 font-serif italic text-2xl text-primary">Le Laffé</span>
-                <span className="text-secondary text-xs">◆</span>
-                <span className="mx-10 font-sans text-xl tracking-[0.25em] uppercase font-light text-primary">Shoo</span>
-                <span className="text-secondary text-xs">◆</span>
+                <span className="mx-6 md:mx-10 font-serif italic text-lg md:text-2xl text-primary">Le Laffé</span>
+                <span className="text-secondary/70 text-[9px] md:text-xs">✦</span>
+                <span className="mx-6 md:mx-10 font-sans text-base md:text-xl tracking-[0.25em] uppercase font-light text-primary">SHOO</span>
+                <span className="text-secondary/70 text-[9px] md:text-xs">✦</span>
               </div>
             ))}
           </div>
@@ -487,6 +487,16 @@ export default function Home() {
                     transform: `translateX(${productScrollProgress * 1.85}%)` // 1.85 scales 35% thumb to fill 65% remaining
                   }}
                 />
+              </div>
+
+              {/* Mobile-friendly "View All Products" CTA */}
+              <div className="mt-8 text-center lg:hidden">
+                <Link
+                  to="/collection"
+                  className="inline-flex items-center text-xs uppercase tracking-widest font-semibold border border-outline-variant px-6 py-3 text-primary hover:text-secondary hover:border-secondary transition-colors rounded"
+                >
+                  Xem tất cả sản phẩm ➔
+                </Link>
               </div>
             </div>
           </div>
