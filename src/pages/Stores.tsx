@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom'
 const stores = [
   {
     name: 'IMPERIAL Beauty Clinic · Quận 1',
-    address: 'Số 1 Lý Tự Trọng, Phường Sài Gòn, Tp. HCM',
+    address: 'Số 1 Lý Tự Trọng, Phường Sài Gòn, Thành phố Hồ Chí Minh',
     phone: '0869 733 288',
     hours: '09:00 – 19:00',
   },
   {
     name: 'IMPERIAL Consultation Lounge · Thảo Điền',
-    address: '24 Nguyễn Ư Dĩ, Thảo Điền, Quận 2, Tp. HCM',
+    address: '24 Nguyễn Ư Dĩ, Thảo Điền, Quận 2, Thành phố Hồ Chí Minh',
     phone: '0869 733 288',
     hours: '10:00 – 18:00',
   },
