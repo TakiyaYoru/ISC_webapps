@@ -224,7 +224,7 @@ export default function About({ page = 'imperial' }: Props) {
                   <div className="p-4 bg-surface-container-low border border-outline-variant/30 rounded text-left">
                     <p className="font-sans text-xs uppercase tracking-wider text-secondary font-semibold text-center sm:text-left">Showroom Trụ Sở Chính</p>
                     <p className="font-sans text-sm font-semibold text-primary mt-1 text-center sm:text-left">
-                      1 Lý Tự Trọng, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh
+                      Số 1 Lý Tự Trọng, Phường Sài Gòn, Tp. HCM
                     </p>
                   </div>
                   <p className="font-serif italic text-sm text-secondary text-center pt-2 border-t border-outline-variant/20 leading-relaxed">

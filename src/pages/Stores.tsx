@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const stores = [
   {
     name: 'IMPERIAL Beauty Clinic · Quận 1',
-    address: '1 Lý Tự Trọng, Phường Bến Nghé, Quận 1, Tp. HCM',
+    address: 'Số 1 Lý Tự Trọng, Phường Sài Gòn, Tp. HCM',
     phone: '0869 733 288',
     hours: '09:00 – 19:00',
   },

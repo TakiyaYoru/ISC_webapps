@@ -61,7 +61,7 @@ export default function Contact() {
             Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ. Hãy liên hệ để được tư vấn chuyên sâu hoặc hỗ trợ đơn hàng.
           </p>
           <div className="space-y-3 font-body-md text-body-md text-on-surface-variant">
-            <p>Địa chỉ: 1 Lý Tự Trọng, Phường Bến Nghé, Quận 1, Tp. HCM</p>
+            <p>Địa chỉ: Số 1 Lý Tự Trọng, Phường Sài Gòn, Tp. HCM</p>
             <p>Hotline: 0869 733 288</p>
             <p>Email: info.imperialskincare@gmail.com</p>
           </div>

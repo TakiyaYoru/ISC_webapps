@@ -16,7 +16,7 @@ export default function Footer() {
               và chống lão hóa cao cấp tại Việt Nam.
             </p>
             <div className="mt-4 flex flex-col gap-2 text-sm text-on-surface-variant">
-              <p>Địa chỉ: 1 Lý Tự Trọng, Phường Bến Nghé, Quận 1, Tp. HCM</p>
+              <p>Địa chỉ: Số 1 Lý Tự Trọng, Phường Sài Gòn, Tp. HCM</p>
               <p>Hotline: 0869 733 288</p>
               <p>Email: info.imperialskincare@gmail.com</p>
             </div>
