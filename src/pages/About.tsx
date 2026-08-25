@@ -108,11 +108,11 @@ const brandsList = [
 const BrandLogo = ({ logo, initials, title, color }: { logo?: string; initials: string; title: string; color: string }) => {
   if (logo) {
     return (
-      <div className="w-36 h-36 flex items-center justify-center border border-outline-variant/30 rounded-lg p-4 bg-white shadow-ambient-sm transition-all duration-300">
+      <div className="w-full max-w-[180px] h-28 flex items-center justify-start lg:justify-center transition-all duration-300">
         <img
           src={logo}
           alt={title}
-          className="max-h-full max-w-full object-contain"
+          className="max-h-full max-w-full object-contain mix-blend-multiply"
         />
       </div>
     )
