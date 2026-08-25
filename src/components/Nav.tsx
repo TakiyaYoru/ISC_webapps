@@ -33,8 +33,6 @@ const navLinks = [
     children: [
       { to: '/about/imperial', label: 'IMPERIAL Skin Care' },
       { to: '/about/brands', label: 'Hệ thống thương hiệu' },
-      { to: '/about/stores', label: 'Hệ thống cửa hàng' },
-      { to: '/about/experience', label: 'Trải nghiệm khách hàng' },
     ],
   },
 ]
