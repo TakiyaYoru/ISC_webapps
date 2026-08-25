@@ -88,6 +88,15 @@ const brandsList = [
     color: 'text-secondary border-secondary/20 bg-surface-container-low',
     logoText: 'Delicacies',
   },
+  {
+    name: 'LA SIRENA SEAFOOD RESTAURANT',
+    subtitle: 'Nhà hàng ẩm thực hải sản cao cấp',
+    description: 'La Sirena Seafood Restaurant là thương hiệu nhà hàng hải sản cao cấp mang tính biểu tượng bên bờ biển Vũng Tàu, hoạt động dưới sự quản lý của Imperial Group. Tọa lạc ngay trên bãi biển riêng của khách sạn 5 sao The IMPERIAL Hotel Vung Tau, nhà hàng mang đến trải nghiệm ẩm thực đại dương đẳng cấp.\n\nVới phong cách thiết kế mang đậm cảm hứng Địa Trung Hải phóng khoáng, không gian mở hướng biển lộng gió và tầm nhìn toàn cảnh đại dương, La Sirena là điểm đến lý tưởng để thưởng thức các món hải sản tươi sống chất lượng cao được chế biến theo phong cách fusion độc đáo cùng nước sốt đặc trưng. Hiện tại, thương hiệu đã mở rộng sự hiện diện với chi nhánh mới đặt tại một biệt thự di sản cổ kính giữa lòng Quận 3, Thành phố Hồ Chí Minh, mang tinh hoa ẩm thực biển về giữa lòng đô thị.',
+    link: 'https://lasirena.com.vn',
+    initials: 'LSSR',
+    color: 'text-secondary border-secondary/20 bg-surface-container-low',
+    logoText: 'Seafood Restaurant',
+  },
 ]
 
 const BrandLogo = ({ initials, title, color }: { initials: string; title: string; color: string }) => {
@@ -347,7 +356,7 @@ export default function About({ page = 'imperial' }: Props) {
 
         {/* Brands List Section */}
         <section className="container-wide space-y-12">
-          {brandsList.map((brand, idx) => (
+          {brandsList.map((brand) => (
             <div
               key={brand.name}
               className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pt-12 border-t border-outline-variant/30 first:border-t-0"
@@ -367,9 +376,6 @@ export default function About({ page = 'imperial' }: Props) {
               <div className="lg:col-span-9 space-y-4">
                 <Reveal delay={0.25}>
                   <div className="space-y-1">
-                    <span className="font-sans text-[10px] uppercase tracking-widest text-secondary font-semibold">
-                      THƯƠNG HIỆU {idx + 1}
-                    </span>
                     <h2 className="font-serif text-2xl text-primary font-medium">
                       {brand.name}
                     </h2>
