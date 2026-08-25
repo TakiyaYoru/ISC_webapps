@@ -48,6 +48,7 @@ const brandsList = [
     subtitle: 'Nghỉ dưỡng & Khách sạn cao cấp',
     description: 'Khách sạn & Khu nghỉ dưỡng Imperial tự hào mang đến cho bạn một không gian sang trọng, một trải nghiệm đầy phong cách, nhưng luôn thoải mái và thư giãn, đúng với ý nghĩa và mục tiêu của thương hiệu Imperial.\n\nKhách sạn có kiến trúc tiên tiến, ẩm thực hiện đại, đa dạng dịch vụ từ Spa thư giãn, bãi biển đặc trưng đến chương trình giải trí vào ban đêm, tạo ra trải nghiệm Hoàng gia cao cấp. Tại đây, ngoài các hoạt động dành cho người lớn, chúng tôi còn tổ chức nhiều chương trình hoạt động tiên tiến dựa trên hoạt động học tập và thể chất dành cho trẻ em, là nơi lý tưởng cho các gia đình lưu trú và tận hưởng những giây phút ý nghĩa nhất.',
     link: 'https://member.imperial.vn/imperial-hotel-resort',
+    logo: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Logo/IMPERIAL%20HOTEL.png',
     initials: 'IHR',
     color: 'text-primary border-primary/20 bg-surface-container-low',
     logoText: 'Hotel & Resort',
@@ -57,6 +58,7 @@ const brandsList = [
     subtitle: 'Chăm sóc sức khỏe & Thẩm mỹ y khoa',
     description: 'Imperial Premium Healthcare là sự kết hợp từ những hiểu biết quý giá nhất của thiên nhiên và khoa học, đúc kết từ y học cổ truyền, y học hiện đại, tâm lý học và tinh thần học từ đó đưa ra những phương pháp trị liệu đưa bạn đến với một vẻ ngoài tràn đầy sức sống và một cơ thể căng tràn sự dẻo dai.',
     link: 'https://member.imperial.vn/imperial-premium-health-care',
+    logo: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Logo/IMPERIAL%20Beauty%20Clinic%20Logo%202025-%20100.png',
     initials: 'IPH',
     color: 'text-secondary border-secondary/20 bg-surface-container-low',
     logoText: 'Premium Healthcare',
@@ -66,6 +68,7 @@ const brandsList = [
     subtitle: 'Căn hộ & Văn phòng dịch vụ hạng sang',
     description: 'Imperial Suites mang đến cho bạn một ngôi nhà thứ hai được trang bị nội thất sang trọng, tinh tế, hỗ trợ thư ký hành chính, nhận gửi thư từ, an ninh 24/7, điều hòa trung tâm, bảo trì, dọn dẹp chuyên nghiệp hàng ngày, cho thuê xe limousine / xe hơi... Tất cả nhằm giúp bạn có sự khởi đầu thuận lợi trong kinh doanh của mình, thay vì lo nghĩ về văn phòng làm việc với nhiều vấn đề thì chỉ cần bước chân vào và cảm nhận sự sang trọng, thoải mái và tiện nghi để yên tâm làm việc một cách hiệu quả nhất.',
     link: 'https://member.imperial.vn/imperial-suites',
+    logo: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Logo/IPD.png',
     initials: 'IS',
     color: 'text-primary border-primary/20 bg-surface-container-low',
     logoText: 'Suites',
@@ -75,6 +78,7 @@ const brandsList = [
     subtitle: 'Đào tạo nhân lực du lịch & Khách sạn chuẩn quốc tế',
     description: 'Trường duy nhất tại Việt Nam hoạt động theo mô hình đào tạo chuẩn quốc tế Hotel School, có cơ sở đào tạo trong khu tổ hợp khách sạn - Căn hộ cao cấp 5 sao chuẩn quốc tế. Chương trình được đồng thiết kế bởi Đại học Niagara, New York, Hoa Kỳ cùng đội ngũ chuyên gia đầu ngành nhiều kinh nghiệm của Khách Sạn Imperial, được thẩm định, quản lý chất lượng và cấp bằng bởi tổ chức NCFE (Vương Quốc Anh). Bằng có giá trị chuyển tiếp và cơ hội việc làm toàn cầu.',
     link: 'https://member.imperial.vn/imperial-international-hotel-college',
+    logo: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Logo/IIHC-Logo%20July-on%20bright%20bg.png',
     initials: 'IIHC',
     color: 'text-primary border-primary/20 bg-surface-container-low',
     logoText: 'Hotel College',
@@ -84,6 +88,7 @@ const brandsList = [
     subtitle: 'Ẩm thực & Nhà hàng cao cấp',
     description: 'Imperial Delicacies mang đến cho bạn nhiều thương hiệu ẩm thực đồng hành cùng cuộc sống hàng ngày cho đến những ngày muốn đổi gió vi vu khắp nơi. Lâu lâu rời xa những địa điểm ồn ào, tìm một nơi yên tĩnh để đổi khẩu vị cùng món Ăn đặc trưng mà rất dễ ăn ở Sài Gòn tại Ashoka, hay những buổi trưa nóng nực muốn nếm trải chút hương vị gió biển cùng các món hải sản tươi sống tuyệt ngon tại La Sirena, no nê với bữa trưa hải sản thì hãy bắt đầu dạo một vòng thành phố biển Vũng Tàu rồi quay trở lại Imperial Garden để thưởng thức ly café hương vị đặc sắc ngắm hoàng hôn trên biển. Sẽ thật uổng phí cho một chuyến đi nếu không dành thêm thời gian tận hưởng không gian âm nhạc sôi động và đầy màu sắc lễ hội chỉ cách đó vài bước chân tại La Bonita. Kết thúc chuyến hành trình, đừng quên mua vài sản phẩm trà mãng cầu từ Imperial Health Tea để làm món quà ý nghĩa dành tặng người thân khi trở về.',
     link: 'https://member.imperial.vn/imperial-delicacies',
+    logo: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Logo/IMPERIAL%20DELICACIES.png',
     initials: 'ID',
     color: 'text-secondary border-secondary/20 bg-surface-container-low',
     logoText: 'Delicacies',
@@ -93,13 +98,26 @@ const brandsList = [
     subtitle: 'Nhà hàng ẩm thực hải sản cao cấp',
     description: 'La Sirena Seafood Restaurant là thương hiệu nhà hàng hải sản cao cấp mang tính biểu tượng bên bờ biển Vũng Tàu, hoạt động dưới sự quản lý của Imperial Group. Tọa lạc ngay trên bãi biển riêng của khách sạn 5 sao The IMPERIAL Hotel Vung Tau, nhà hàng mang đến trải nghiệm ẩm thực đại dương đẳng cấp.\n\nVới phong cách thiết kế mang đậm cảm hứng Địa Trung Hải phóng khoáng, không gian mở hướng biển lộng gió và tầm nhìn toàn cảnh đại dương, La Sirena là điểm đến lý tưởng để thưởng thức các món hải sản tươi sống chất lượng cao được chế biến theo phong cách fusion độc đáo cùng nước sốt đặc trưng. Hiện tại, thương hiệu đã mở rộng sự hiện diện với chi nhánh mới đặt tại một biệt thự di sản cổ kính giữa lòng Quận 3, Thành phố Hồ Chí Minh, mang tinh hoa ẩm thực biển về giữa lòng đô thị.',
     link: 'https://lasirena.com.vn',
+    logo: 'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Logo/LA%20SIRENA.png',
     initials: 'LSSR',
     color: 'text-secondary border-secondary/20 bg-surface-container-low',
     logoText: 'Seafood Restaurant',
   },
 ]
 
-const BrandLogo = ({ initials, title, color }: { initials: string; title: string; color: string }) => {
+const BrandLogo = ({ logo, initials, title, color }: { logo?: string; initials: string; title: string; color: string }) => {
+  if (logo) {
+    return (
+      <div className="w-36 h-36 flex items-center justify-center border border-outline-variant/30 rounded-lg p-4 bg-white shadow-ambient-sm transition-all duration-300">
+        <img
+          src={logo}
+          alt={title}
+          className="max-h-full max-w-full object-contain"
+        />
+      </div>
+    )
+  }
+
   return (
     <div className={`w-36 h-36 flex flex-col items-center justify-center border rounded-lg p-4 text-center shadow-ambient-sm transition-all duration-300 select-none ${color}`}>
       <svg viewBox="0 0 100 100" className="w-14 h-14 mb-2 text-secondary fill-none" stroke="currentColor" strokeWidth="1.5">
@@ -365,6 +383,7 @@ export default function About({ page = 'imperial' }: Props) {
               <div className="lg:col-span-3 flex justify-start lg:justify-center items-start pt-2">
                 <Reveal delay={0.15}>
                   <BrandLogo
+                    logo={brand.logo}
                     initials={brand.initials}
                     title={brand.logoText}
                     color={brand.color}
