@@ -12,4 +12,4 @@ Chính sách thanh toán, mục phương thức trong quy định chung và ph�
 
 Build và kiểm tra trình duyệt đạt: tick điều kiện, ẩn phương thức demo, lỗi lưu giữ dữ liệu, QR khớp, trạng thái chờ xác nhận, mở lại sau tải trang và không tràn ngang trên điện thoại. Test nhận đơn dùng mock tại máy, không gửi đơn kiểm thử vào hệ thống thật.
 
-Workspace hiện chưa có `.env.local` kết nối Supabase. Trước khi lên web thật cần cấu hình VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY trong môi trường triển khai hoặc backend nhận đơn, kiểm tra lưu đơn và đối soát thực tế. Không đưa khóa service-role vào frontend. Chưa push hoặc deploy.
+Ngày 13/10/2026 đã triển khai ISC_backend trên Render và cấu hình kết nối cho frontend production; database Supabase hiện có đã có các bảng commerce và dữ liệu sản phẩm. Checkout lấy mã đơn/tổng tiền từ server, không tự sinh mã hoặc tin giá frontend. Chuyển khoản vẫn chờ đối soát thủ công; chưa kiểm thử giao dịch tiền thật. Không đưa khóa server vào frontend. Cấu hình và phần còn lại ở `docs/backend-rollout.md`.
