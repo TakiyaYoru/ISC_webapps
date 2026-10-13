@@ -4,6 +4,7 @@ const typeLabels: Record<string, string> = {
   Treatment: 'Dưỡng phục hồi',
   Concentrate: 'Tinh chất cô đặc',
   'Skin Booster': 'Tinh chất tăng cường',
+  'Skin Booster Pre-Treatment': 'Tinh chất chuẩn bị da',
   'Bộ Mini': 'Bộ dung tích nhỏ',
   'Set full size': 'Bộ dung tích đầy đủ',
   'Gift Set': 'Bộ quà tặng',

@@ -240,7 +240,7 @@ function ProductContent() {
                     selectedImageIndex === index ? 'border-primary shadow-sm' : 'border-outline-variant/30 hover:border-primary/50'
                   }`}
                 >
-                  <img src={imgUrl} alt={`${product.name} view ${index + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
+                  <img src={imgUrl} alt={`${product.name} – góc nhìn ${index + 1}`} className="w-full h-full object-contain mix-blend-multiply" />
                 </button>
               ))}
             </div>
