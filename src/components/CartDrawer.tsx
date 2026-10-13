@@ -52,6 +52,14 @@ export default function CartDrawer() {
       return
     }
     setTermsError(false)
+    const normalizedPhone = phone.trim().replace(/[\s.()-]/g, '').replace(/^\+?84(?=\d{9}$)/, '0')
+    const inputError = name.trim().length < 2 || name.trim().length > 100 ? 'Vui lòng nhập họ tên từ 2 đến 100 ký tự.'
+      : !/^0\d{9}$/.test(normalizedPhone) ? 'Vui lòng nhập số điện thoại Việt Nam gồm 10 chữ số, bắt đầu bằng 0 (hoặc dùng mã +84).'
+      : address.trim().length < 3 || address.trim().length > 300 ? 'Vui lòng nhập địa chỉ chi tiết từ 3 đến 300 ký tự.'
+      : !district.trim() || district.trim().length > 100 ? 'Vui lòng nhập khu vực giao hàng, tối đa 100 ký tự.'
+      : note.trim().length > 1000 ? 'Ghi chú tối đa 1.000 ký tự.'
+      : null
+    if (inputError) { setSubmissionError(inputError); return }
     if (!name || !phone || !address || !district) {
       setValidationError(true)
       return
@@ -61,7 +69,7 @@ export default function CartDrawer() {
     setSubmissionError('')
     setIsSubmitting(true)
     const input = {
-      client_name: name.trim(), client_phone: phone.trim(), note: note.trim(),
+      client_name: name.trim(), client_phone: normalizedPhone, note: note.trim(),
       shippingAddress: { address: address.trim(), district: district.trim(), province },
       paymentMethod, termsAccepted: true as const, termsVersion: '2026-10-13' as const,
       expectedTotal: cartTotal, items: cartItems.map(item => ({ slug: item.slug, quantity: item.quantity })),
