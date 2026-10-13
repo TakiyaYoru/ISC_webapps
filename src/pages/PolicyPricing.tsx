@@ -14,7 +14,7 @@ const pricingRules = [
   },
   {
     title: 'Giá Niêm Yết & Thuế',
-    description: 'Giá niêm yết là giá bán sản phẩm tại thời điểm khách hàng đặt hàng, đã bao gồm các loại thuế theo quy định pháp luật và chưa bao gồm phí vận chuyển, trừ trường hợp website có thông báo khác.',
+    description: 'Giá niêm yết và số tiền thanh toán sản phẩm đã bao gồm VAT 8%. Website hiển thị riêng giá chưa VAT, tiền VAT và giá sau VAT. Giá chưa VAT được tính bằng giá sau VAT chia 1,08 và làm tròn đến đồng; tiền VAT là phần chênh lệch để tổng khớp giá niêm yết. Phí vận chuyển được thông báo riêng theo chính sách giao nhận.',
     icon: (
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />

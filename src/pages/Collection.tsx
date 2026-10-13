@@ -1,3 +1,4 @@
+import PriceVat from '../components/PriceVat'
 import { useMemo, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -354,7 +355,7 @@ export default function Collection() {
                         <span className="font-sans text-[8px] md:text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 md:mb-2">Le Laffé</span>
                         <h2 className="font-serif text-sm md:text-lg leading-snug md:leading-tight text-primary mb-1 md:mb-2 flex-grow line-clamp-2 min-h-[36px] md:min-h-[48px]">{product.name}</h2>
                         <p className="text-[10px] md:text-xs text-on-surface-variant mb-2 md:mb-4">{productTypeLabel(product.type)}</p>
-                        <p className="font-sans text-xs md:text-sm text-secondary mb-4 md:mb-6 font-semibold">{product.price}</p>
+                        <p className="font-sans text-xs md:text-sm text-secondary font-semibold">{product.price}</p><div className="mb-4 md:mb-6"><PriceVat price={product.price} /></div>
                         <Link
                           to={`/product/${product.slug}`}
                           className="mt-auto w-full border border-secondary text-secondary hover:bg-secondary hover:text-white py-2 md:py-3 text-[10px] md:text-xs tracking-widest font-sans uppercase transition-colors duration-300 font-semibold text-center block"

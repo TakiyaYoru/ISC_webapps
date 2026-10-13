@@ -1,3 +1,4 @@
+import PriceVat from '../components/PriceVat'
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useCart } from '../context/cartState'
@@ -256,7 +257,7 @@ function ProductContent() {
               <p className="font-sans text-base text-on-surface-variant mb-6 leading-relaxed">
                 {descriptionParas[0] ?? product.description}
               </p>
-              <p className="font-sans text-xl font-semibold text-secondary">{parsePrice(product.price)}</p>
+              <p className="font-sans text-xl font-semibold text-secondary">{parsePrice(product.price)}</p><PriceVat price={product.price} />
               {volume && <p className="font-sans text-sm text-outline mt-1">{volume}</p>}
               {productProvenance[product.slug] && <p className="mt-3 text-sm text-on-surface-variant">Xuất xứ: <strong className="font-medium text-primary">{productLabelInformation.country}</strong></p>}
             </div>

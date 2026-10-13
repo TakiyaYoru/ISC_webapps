@@ -1,3 +1,4 @@
+import PriceVat from '../components/PriceVat'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api'
@@ -253,7 +254,7 @@ export default function Home() {
                       </p>
 
                       <div className="flex items-center justify-between mt-auto pt-3 border-t border-outline-variant/30">
-                        <span className="font-sans text-base font-semibold text-secondary">{product.price}</span>
+                        <span className="font-sans text-base font-semibold text-secondary">{product.price}</span><PriceVat price={product.price} />
                         <button
                           onClick={(e) => {
                             e.preventDefault()
