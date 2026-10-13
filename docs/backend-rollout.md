@@ -8,7 +8,7 @@ Frontend đã được fast-forward lên main và deploy Render sau khi kiểm t
 - Backend đã Live: `https://isc-backend-g4b3.onrender.com`, Render service `srv-db6ufl3ncjis73etb8ng`, region Singapore, gói Free dùng kiểm thử.
 - Website `https://imperialskincare.vn` đã deploy bản mới; bundle có đúng URL API và khóa publishable, không có khóa server. CORS cho domain website trả đúng; health/readiness 200, products 200 với 7 sản phẩm, admin không đăng nhập trả 401.
 - Khóa server hiện có đã được chủ project cho phép lưu trong môi trường Render, không vào GitHub hoặc frontend.
-- Email dự kiến quản trị: `duykhafoot@gmail.com`. Còn bước chủ tài khoản tự đặt mật khẩu, tạo tài khoản và cấp đúng UUID vào bảng admin. Chưa gửi email mời hoặc nhập mật khẩu thay chủ tài khoản.
+- Chủ website đã tự tạo tài khoản và đặt mật khẩu. Sau khi chủ website xác nhận cấp quyền, đã thêm đúng UUID của tài khoản được xác nhận email vào `isc_admin_users`; truy vấn kiểm tra is_admin=true. Không lưu email quản trị hoặc thông tin đăng nhập trong hướng dẫn triển khai.
 - Sau khi chủ website xác nhận gửi một đơn kiểm thử và đồng ý điều kiện giao dịch, đã kiểm thử production với đơn `ISC274DC7B161104A44854A`, 11.200.000 VNĐ, dùng thông tin liên hệ công khai của công ty. Supabase có đúng một bản ghi; payment_status=pending, status=processing. Tên và ghi chú đều ghi rõ KIỂM THỬ – KHÔNG GIAO HÀNG. QR đã giải mã kiểm tra đúng ngân hàng, tài khoản, số tiền, mã đơn và CRC; trang chuyển khoản mở lại được sau reload. Không chuyển tiền hoặc xác nhận đã thanh toán. Đơn kiểm thử được giữ lại để chủ website xem, chưa hủy/xóa.
 - Checkout đã sửa khác biệt validation FE/BE: nhận số điện thoại có dấu cách/dấu chấm và mã 84/+84, kiểm tra trường nhập trước khi gửi, thông báo rõ trường sai. Backend hiện có 11 kiểm thử đạt; FE build/lint đạt.
 
@@ -26,7 +26,7 @@ Frontend đã được fast-forward lên main và deploy Render sau khi kiểm t
 
 - Render Web Service dùng Node 24.16.0, build `npm ci && npm run build`, start `npm start`, health `/health/ready`, region Singapore.
 - Khóa server Supabase trong biến `SUPABASE_SERVICE_ROLE_KEY` của Render; tuyệt đối không có khóa này trong FE/GitHub.
-- Cần tạo/mời tài khoản quản trị và cấp đúng UUID trong `isc_admin_users`; chủ tài khoản tự đặt mật khẩu.
+- Tài khoản quản trị đầu tiên đã được cấp quyền. Sau khi thay đổi quyền, tải lại trang hoặc đăng nhập lại để frontend tải lại profile. Các tài khoản mới chỉ có quyền khách hàng cho đến khi chủ website cấp riêng UUID trong `isc_admin_users`.
 - FE production đã có URL API Render thật trong `VITE_API_URL`, URL Supabase hiện có và publishable key trong `VITE_SUPABASE_ANON_KEY`. Với máy phát triển riêng, cấu hình `.env.local` và backend local như README; không mặc định gửi đơn thử vào database production. Khi chưa có VITE_API_URL, catalog có thể xem bằng nội dung có sẵn nhưng ghi đơn/liên hệ báo chưa cấu hình, không giả thành công.
 - Chưa chọn gói trả phí. Render Free có thể ngủ sau thời gian không truy cập; cần thống nhất gói vận hành thật.
 - VAT, phí giao hàng và quy trình hoàn tiền/đối soát thực tế vẫn theo quyết định riêng của chủ website; backend chưa tự đặt thuế hoặc cộng phí vận chuyển.
