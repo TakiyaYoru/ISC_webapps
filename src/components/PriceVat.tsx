@@ -2,10 +2,11 @@ export default function PriceVat({ price }: { price: string }) {
   const gross = Number(price.replace(/[^0-9]/g, ''))
   if (!Number.isSafeInteger(gross) || gross <= 0) return null
   const net = Math.round(gross * 100 / 108)
-  const format = (value: number) => value.toLocaleString('vi-VN') + ' ₫'
-  return <div className="font-sans text-xs text-ink/70 leading-relaxed mt-1">
-    <div>Giá chưa VAT: {format(net)}</div>
-    <div>VAT 8%: {format(gross - net)}</div>
-    <div>Giá sau VAT: {format(gross)}</div>
-  </div>
+  return (
+    <p className="mt-1.5 font-sans text-[11px] md:text-xs font-normal leading-relaxed text-ink/55">
+      <span className="inline-block">Đã gồm VAT 8%</span>
+      <span aria-hidden="true" className="mx-1.5 text-ink/30">·</span>
+      <span className="inline-block">Giá chưa VAT: {net.toLocaleString('vi-VN')} ₫</span>
+    </p>
+  )
 }
