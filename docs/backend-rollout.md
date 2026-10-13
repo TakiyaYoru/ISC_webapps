@@ -9,7 +9,8 @@ Frontend đã được fast-forward lên main và deploy Render sau khi kiểm t
 - Website `https://imperialskincare.vn` đã deploy bản mới; bundle có đúng URL API và khóa publishable, không có khóa server. CORS cho domain website trả đúng; health/readiness 200, products 200 với 7 sản phẩm, admin không đăng nhập trả 401.
 - Khóa server hiện có đã được chủ project cho phép lưu trong môi trường Render, không vào GitHub hoặc frontend.
 - Email dự kiến quản trị: `duykhafoot@gmail.com`. Còn bước chủ tài khoản tự đặt mật khẩu, tạo tài khoản và cấp đúng UUID vào bảng admin. Chưa gửi email mời hoặc nhập mật khẩu thay chủ tài khoản.
-- Chưa gửi đơn/liên hệ kiểm thử vào production và chưa chuyển tiền. Kiểm thử ghi dữ liệu dùng database tại máy.
+- Sau khi chủ website xác nhận gửi một đơn kiểm thử và đồng ý điều kiện giao dịch, đã kiểm thử production với đơn `ISC274DC7B161104A44854A`, 11.200.000 VNĐ, dùng thông tin liên hệ công khai của công ty. Supabase có đúng một bản ghi; payment_status=pending, status=processing. Tên và ghi chú đều ghi rõ KIỂM THỬ – KHÔNG GIAO HÀNG. QR đã giải mã kiểm tra đúng ngân hàng, tài khoản, số tiền, mã đơn và CRC; trang chuyển khoản mở lại được sau reload. Không chuyển tiền hoặc xác nhận đã thanh toán. Đơn kiểm thử được giữ lại để chủ website xem, chưa hủy/xóa.
+- Checkout đã sửa khác biệt validation FE/BE: nhận số điện thoại có dấu cách/dấu chấm và mã 84/+84, kiểm tra trường nhập trước khi gửi, thông báo rõ trường sai. Backend hiện có 11 kiểm thử đạt; FE build/lint đạt.
 
 ## Đã thực hiện
 
