@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useCart } from '../context/CartContext'
-import { useUser } from '../context/UserContext'
-import { api } from '../services/api'
+import { Link } from 'react-router-dom'
+import { useCart } from '../context/cartState'
+import { useUser } from '../context/userState'
+import { api, ApiError } from '../services/api'
+import { productTypeLabel } from '../utils/productLabels'
+import BankTransferInstructions from './BankTransferInstructions'
+import type { PendingBankOrder } from '../utils/bankTransfer'
 
 export default function CartDrawer() {
   const {
@@ -13,20 +17,26 @@ export default function CartDrawer() {
     removeFromCart,
     cartTotal,
     clearCart,
+    refreshPrices,
   } = useCart()
 
   const { user, addOrder, setLoginModalOpen } = useUser()
 
-  const [checkoutStep, setCheckoutStep] = useState<'cart' | 'form' | 'success'>('cart')
+  const [checkoutStep, setCheckoutStep] = useState<'cart' | 'form' | 'success' | 'transfer'>('cart')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [note, setNote] = useState('')
   const [province, setProvince] = useState('Thành phố Hồ Chí Minh')
   const [district, setDistrict] = useState('')
   const [address, setAddress] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'momo' | 'vnpay'>('cod')
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'bank_transfer'>('bank_transfer')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [validationError, setValidationError] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [termsError, setTermsError] = useState(false)
+  const [submissionError, setSubmissionError] = useState('')
+  const [bankOrder, setBankOrder] = useState<PendingBankOrder | null>(null)
+  const checkoutRequest = useRef<{ fingerprint: string; id: string } | null>(null)
 
   useEffect(() => {
     if (user && checkoutStep === 'form') {
@@ -36,85 +46,62 @@ export default function CartDrawer() {
   }, [user, checkoutStep, name, phone])
 
   const processCheckout = async () => {
+    if (isSubmitting) return
+    if (!termsAccepted) {
+      setTermsError(true)
+      return
+    }
+    setTermsError(false)
     if (!name || !phone || !address || !district) {
       setValidationError(true)
       return
     }
     setValidationError(false)
 
-    const fullAddress = `${address}, ${district}, ${province}`
-    const noteWithAddress = `[Địa chỉ: ${fullAddress}] ${note || ''}`
-
-    if (paymentMethod === 'cod') {
-      setIsSubmitting(true)
-      
-      const orderCode = `COD-${Math.floor(100000 + Math.random() * 900000)}`
-
-      // Add to user account history
-      addOrder({
-        code: orderCode,
-        total: cartTotal,
-        paymentMethod: 'cod',
-        clientName: name,
-        clientPhone: phone,
-        items: cartItems.map((item) => ({
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          image: item.image,
-        })),
-      })
-
-      // Fire-and-forget database insertion so it doesn't block the UI transition
-      const insertOrder = async () => {
-        try {
-          await api.orders.create({
-            client_name: name,
-            client_phone: phone,
-            note: `[COD] [Mã DH: ${orderCode}] ${noteWithAddress}`,
-            items: cartItems,
-          })
-        } catch (err) {
-          console.error('Error during checkout submission:', err)
-        }
-      }
-      insertOrder()
-
-      // Simulate a quick 600ms processing delay and transition immediately
-      setTimeout(() => {
-        setIsSubmitting(false)
-        setCheckoutStep('success')
-        clearCart()
-      }, 600)
-    } else if (paymentMethod === 'momo') {
-      const code = `MOMO-${Math.floor(100000 + Math.random() * 900000)}`
-      localStorage.setItem('imperial_skincare_pending_order', JSON.stringify({
-        name,
-        phone,
-        note: noteWithAddress,
-        items: cartItems,
-        method: 'momo',
-        code,
-        total: cartTotal,
-      }))
-      setCartOpen(false)
-      // Redirect to external simulated gateway page
-      window.location.href = `/payment/gateway?method=momo`
-    } else if (paymentMethod === 'vnpay') {
-      const code = `VNPAY-${Math.floor(100000 + Math.random() * 900000)}`
-      localStorage.setItem('imperial_skincare_pending_order', JSON.stringify({
-        name,
-        phone,
-        note: noteWithAddress,
-        items: cartItems,
-        method: 'vnpay',
-        code,
-        total: cartTotal,
-      }))
-      setCartOpen(false)
-      // Redirect to external simulated gateway page
-      window.location.href = `/payment/gateway?method=vnpay`
+    setSubmissionError('')
+    setIsSubmitting(true)
+    const input = {
+      client_name: name.trim(), client_phone: phone.trim(), note: note.trim(),
+      shippingAddress: { address: address.trim(), district: district.trim(), province },
+      paymentMethod, termsAccepted: true as const, termsVersion: '2026-10-13' as const,
+      expectedTotal: cartTotal, items: cartItems.map(item => ({ slug: item.slug, quantity: item.quantity })),
     }
+    const fingerprint = JSON.stringify(input)
+    if (!checkoutRequest.current) {
+      try { checkoutRequest.current = JSON.parse(sessionStorage.getItem('isc_checkout_request') || 'null') } catch { /* New request below. */ }
+    }
+    if (checkoutRequest.current?.fingerprint !== fingerprint) {
+      checkoutRequest.current = { fingerprint, id: crypto.randomUUID() }
+      try { sessionStorage.setItem('isc_checkout_request', JSON.stringify(checkoutRequest.current)) } catch { /* In-memory retries still work. */ }
+    }
+    try {
+      const result = await api.orders.create({
+        ...input, idempotencyKey: checkoutRequest.current.id,
+      })
+      if (!result.success) throw new Error('Không thể ghi nhận đơn hàng')
+      const orderCode = result.code
+      const total = result.total
+      addOrder({ code: orderCode, total, paymentMethod: result.paymentMethod, clientName: name, clientPhone: phone,
+        items: result.items.map(item => ({ name: item.name, quantity: item.quantity, price: formatVND(item.priceAmount), image: item.image })) })
+      if (paymentMethod === 'bank_transfer') {
+        const pending = { code: orderCode, total }
+        setBankOrder(pending)
+        try { localStorage.setItem('imperial_skincare_bank_order', JSON.stringify(pending)) } catch { /* Instructions remain in the drawer. */ }
+        setCheckoutStep('transfer')
+      } else setCheckoutStep('success')
+      clearCart()
+      checkoutRequest.current = null
+      try { sessionStorage.removeItem('isc_checkout_request') } catch { /* Order is already saved. */ }
+    } catch (error) {
+      if (error instanceof ApiError && error.code === 'PRICE_CHANGED') {
+        try {
+          refreshPrices(await api.products.getAll())
+          setCheckoutStep('cart')
+          setTermsAccepted(false)
+        } catch { /* Keep current cart and show the error. */ }
+      }
+      setSubmissionError((error instanceof Error ? error.message : 'Chưa gửi được đơn hàng.') + ' Thông tin và giỏ hàng được giữ lại; vui lòng thử lại hoặc liên hệ 0869 733 288.')
+    } finally { setIsSubmitting(false) }
   }
 
   const handleCheckoutSubmit = (e: React.FormEvent) => {
@@ -123,6 +110,8 @@ export default function CartDrawer() {
   }
 
   const handleClose = () => {
+    setTermsAccepted(false)
+    setTermsError(false)
     setCartOpen(false)
     // Revert form states after transition completes
     setTimeout(() => {
@@ -133,13 +122,41 @@ export default function CartDrawer() {
       setProvince('Thành phố Hồ Chí Minh')
       setDistrict('')
       setAddress('')
-      setPaymentMethod('cod')
+      setPaymentMethod('bank_transfer')
+      setValidationError(false)
     }, 300)
   }
 
   const formatVND = (num: number) => {
     return num.toLocaleString('vi-VN') + ' VNĐ'
   }
+
+  const termsConsent = (
+    <div className="mb-5 text-sm leading-relaxed text-on-surface-variant">
+      <div className="flex items-start gap-3">
+        <input
+          id="checkout-terms"
+          type="checkbox"
+          required
+          checked={termsAccepted}
+          aria-invalid={termsError}
+          aria-describedby={termsError ? 'checkout-terms-error' : undefined}
+          onChange={(event) => {
+            setTermsAccepted(event.target.checked)
+            setTermsError(false)
+          }}
+          className="mt-1 h-4 w-4 shrink-0 accent-primary"
+        />
+        <label htmlFor="checkout-terms">
+          Tôi đã đọc và đồng ý với các{' '}
+          <Link to="/policy/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+            Điều kiện giao dịch chung của website
+          </Link>{' '}<span aria-hidden="true">*</span>
+        </label>
+      </div>
+      {termsError && <p id="checkout-terms-error" role="alert" className="mt-2 text-red-600">Vui lòng đọc và đồng ý với điều kiện giao dịch trước khi đặt hàng.</p>}
+    </div>
+  )
 
   return (
     <AnimatePresence>
@@ -168,11 +185,12 @@ export default function CartDrawer() {
                 {checkoutStep === 'cart' && 'Giỏ hàng của bạn'}
                 {checkoutStep === 'form' && 'Thông tin đặt hàng'}
                 {checkoutStep === 'success' && 'Gửi thành công'}
+                {checkoutStep === 'transfer' && 'Thông tin chuyển khoản'}
               </h2>
               <button
                 onClick={handleClose}
                 className="w-10 h-10 flex items-center justify-center text-primary/60 hover:text-primary transition-colors"
-                aria-label="Close cart"
+                aria-label="Đóng giỏ hàng"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -211,7 +229,7 @@ export default function CartDrawer() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <span className="text-[10px] uppercase tracking-widest text-on-surface-variant/80 block mb-1">
-                              {item.type}
+                              {productTypeLabel(item.type)}
                             </span>
                             <h4 className="font-serif text-base text-primary leading-snug truncate mb-1">
                               {item.name}
@@ -259,7 +277,7 @@ export default function CartDrawer() {
                   {!user && (
                     <div className="bg-primary/[0.02] border border-outline-variant/40 p-4 flex items-center justify-between text-xs">
                       <span className="text-on-surface-variant/85 font-body-md leading-relaxed">
-                        Đăng nhập để tích lũy điểm thưởng và lưu lịch sử đơn hàng.
+                        Đăng nhập để lưu lịch sử đơn hàng, hoặc tiếp tục đặt hàng không cần tài khoản.
                       </span>
                       <button
                         type="button"
@@ -416,44 +434,16 @@ export default function CartDrawer() {
                         </div>
                       </div>
 
-                      {/* MoMo */}
-                      <div 
-                        onClick={() => setPaymentMethod('momo')}
-                        className={`flex gap-4 p-4 border cursor-pointer transition-all items-center ${paymentMethod === 'momo' ? 'border-primary bg-primary/[0.03]' : 'border-outline-variant hover:border-primary/50'}`}
-                      >
-                        <div className="w-9 h-9 rounded bg-[#A50064] text-white flex items-center justify-center font-bold text-[9px] tracking-tighter flex-shrink-0">
-                          momo
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-body-md text-sm font-semibold text-primary">Ví MoMo (Redirect)</p>
-                          <p className="text-xs text-on-surface-variant/70 truncate">Chuyển hướng đến cổng thanh toán MoMo.</p>
-                        </div>
-                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentMethod === 'momo' ? 'border-primary' : 'border-outline'}`}>
-                          {paymentMethod === 'momo' && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
-                        </div>
-                      </div>
-
-                      {/* VNPAY */}
-                      <div 
-                        onClick={() => setPaymentMethod('vnpay')}
-                        className={`flex gap-4 p-4 border cursor-pointer transition-all items-center ${paymentMethod === 'vnpay' ? 'border-primary bg-primary/[0.03]' : 'border-outline-variant hover:border-primary/50'}`}
-                      >
-                        <div className="w-9 h-9 rounded bg-[#005BAA] text-white flex items-center justify-center font-bold text-[9px] tracking-tighter flex-shrink-0 uppercase">
-                          vnpay
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-body-md text-sm font-semibold text-primary">Cổng VNPAY (Redirect)</p>
-                          <p className="text-xs text-on-surface-variant/70 truncate">Chuyển hướng đến cổng thanh toán VNPAY.</p>
-                        </div>
-                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${paymentMethod === 'vnpay' ? 'border-primary' : 'border-outline'}`}>
-                          {paymentMethod === 'vnpay' && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
-                        </div>
-                      </div>
+                      <label className={`flex gap-3 p-4 border cursor-pointer items-center ${paymentMethod === 'bank_transfer' ? 'border-primary bg-primary/[0.03]' : 'border-outline-variant'}`}>
+                        <input type="radio" name="payment-method" checked={paymentMethod === 'bank_transfer'} onChange={() => setPaymentMethod('bank_transfer')} className="accent-primary" />
+                        <span><span className="block font-semibold text-primary">Chuyển khoản ngân hàng</span><span className="block text-xs mt-1">Vietcombank · Tài khoản CÔNG TY CỔ PHẦN IMPERIAL CARE</span></span>
+                      </label>
                     </div>
                   </div>
                 </form>
               )}
 
+              {checkoutStep === 'transfer' && bankOrder && <><BankTransferInstructions order={bankOrder} /><Link to="/payment/bank-transfer" onClick={handleClose} className="btn-primary mt-6 w-full">Mở trang thông tin chuyển khoản</Link></>}
               {checkoutStep === 'success' && (
                 <div className="h-full flex flex-col items-center justify-center text-center py-16">
                   {/* Success Checkmark Animation */}
@@ -498,13 +488,21 @@ export default function CartDrawer() {
             {/* Footer Summary */}
             {cartItems.length > 0 && checkoutStep === 'cart' && (
               <div className="p-6 border-t border-outline-variant bg-surface-container-lowest">
+                {submissionError && <p role="alert" className="mb-4 text-sm text-red-600">{submissionError}</p>}
                 <div className="flex justify-between items-center mb-6">
                   <span className="font-serif text-lg text-primary">Tổng tạm tính</span>
                   <span className="font-serif text-xl text-primary font-semibold">{formatVND(cartTotal)}</span>
                 </div>
+                {termsConsent}
                 <div className="flex flex-col gap-3">
                   <button
-                    onClick={() => setCheckoutStep('form')}
+                    onClick={() => {
+                      if (!termsAccepted) {
+                        setTermsError(true)
+                        return
+                      }
+                      setCheckoutStep('form')
+                    }}
                     className="w-full bg-primary text-on-primary h-14 text-label-caps uppercase tracking-widest font-medium transition-colors hover:bg-secondary duration-300"
                   >
                     Tiến hành thanh toán
@@ -521,11 +519,13 @@ export default function CartDrawer() {
 
             {checkoutStep === 'form' && (
               <div className="p-6 border-t border-outline-variant bg-surface-container-lowest">
+                {submissionError && <p role="alert" className="mb-4 text-sm text-red-600">{submissionError}</p>}
+                {termsConsent}
                 <div className="flex flex-col gap-3">
                   <button
                     type="button"
                     onClick={processCheckout}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !termsAccepted}
                     className="w-full bg-primary text-on-primary h-14 text-label-caps uppercase tracking-widest font-medium transition-colors hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed duration-300 flex items-center justify-center gap-3"
                   >
                     {isSubmitting ? (
@@ -537,7 +537,7 @@ export default function CartDrawer() {
                         Đang xử lý...
                       </>
                     ) : (
-                      paymentMethod === 'cod' ? 'Xác nhận đặt hàng (COD)' : (paymentMethod === 'momo' ? 'Thanh toán qua ví MoMo' : 'Thanh toán qua cổng VNPAY')
+                      paymentMethod === 'cod' ? 'Xác nhận đặt hàng (COD)' : 'Đặt hàng và chuyển khoản'
                     )}
                   </button>
                   <button

@@ -19,7 +19,7 @@ export default function BrandMarquee() {
       <div className="container-wide mb-10 md:mb-14">
         <div className="flex items-center justify-center gap-5 text-[0.68rem] md:text-[0.72rem] uppercase tracking-[0.28em] text-ink/45">
           <span className="h-px w-10 md:w-14 bg-ink/25" />
-          <span>A House of Brands · Imperial Beauty Clinic</span>
+          <span>Hệ thống thương hiệu · Imperial Beauty Clinic</span>
           <span className="h-px w-10 md:w-14 bg-ink/25" />
         </div>
       </div>

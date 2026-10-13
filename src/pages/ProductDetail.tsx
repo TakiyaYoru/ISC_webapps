@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
+import { useCart } from '../context/cartState'
+import { productTypeLabel } from '../utils/productLabels'
+import { productLabelInformation, productProvenance } from '../data/productProvenance'
 import { api } from '../services/api'
 import type { Product } from '../services/api'
 import LoadingScreen from '../components/LoadingScreen'
@@ -26,7 +28,7 @@ const renderFormattedText = (text: string) => {
 
   const lines = text.split('\n').map((line) => line.trim()).filter(Boolean)
   const listItems: { num: string; title: string; desc: string }[] = []
-  let introLines: string[] = []
+  const introLines: string[] = []
 
   lines.forEach((line) => {
     const match = line.match(/^(\d+)\.\s*([^:]+)(?::\s*(.*))?$/)
@@ -89,6 +91,11 @@ const parseVolume = (infoLines: string[]) => {
 
 export default function ProductDetail() {
   const { slug } = useParams()
+  return <ProductContent key={slug} />
+}
+
+function ProductContent() {
+  const { slug } = useParams()
   const [product, setProduct] = useState<Product | undefined>(undefined)
   const [related, setRelated] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -97,11 +104,6 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1)
   const [showStickyBar, setShowStickyBar] = useState(false)
   const { addToCart } = useCart()
-
-  useEffect(() => {
-    setSelectedImageIndex(0)
-    setQuantity(1)
-  }, [slug])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -138,8 +140,7 @@ export default function ProductDetail() {
 
     async function init() {
       setLoading(true)
-      const minDelay = new Promise((resolve) => setTimeout(resolve, 800))
-      await Promise.all([loadProductData(), minDelay])
+      await loadProductData()
       if (active) setLoading(false)
     }
     init()
@@ -248,7 +249,7 @@ export default function ProductDetail() {
           {/* Details Section */}
           <div className="md:col-span-6 flex flex-col justify-center">
             <div className="mb-8">
-              <span className="font-sans text-[10px] uppercase tracking-widest text-on-surface-variant mb-4 block">Le Laffé • {product.type}</span>
+              <span className="font-sans text-[10px] uppercase tracking-widest text-on-surface-variant mb-4 block">Le Laffé • {productTypeLabel(product.type)}</span>
               <h1 className="font-serif text-2xl md:text-4xl text-primary mb-6 leading-tight">
                 {product.name}
               </h1>
@@ -257,6 +258,7 @@ export default function ProductDetail() {
               </p>
               <p className="font-sans text-xl font-semibold text-secondary">{parsePrice(product.price)}</p>
               {volume && <p className="font-sans text-sm text-outline mt-1">{volume}</p>}
+              {productProvenance[product.slug] && <p className="mt-3 text-sm text-on-surface-variant">Xuất xứ: <strong className="font-medium text-primary">{productLabelInformation.country}</strong></p>}
             </div>
             <div className="w-full h-px bg-outline-variant/40 mb-8" />
             
@@ -420,6 +422,19 @@ export default function ProductDetail() {
 
       {/* Accordion Details Section */}
       <section className="max-w-[800px] w-full mx-auto px-4 py-12 md:py-20">
+        {productProvenance[product.slug] && (
+          <section aria-label="Nguồn gốc và thông tin sử dụng sản phẩm" className="mb-6 border border-outline-variant/50 bg-surface-container-lowest p-5 md:p-7">
+            <h2 className="mb-5 font-serif text-xl text-primary">Nguồn gốc và thông tin sản phẩm</h2>
+            <dl className="space-y-4 text-sm leading-relaxed text-on-surface-variant">
+              <div><dt className="font-semibold text-primary">Thương hiệu</dt><dd>{productLabelInformation.brand}</dd></div>
+              <div><dt className="font-semibold text-primary">Nước sản xuất</dt><dd>{productLabelInformation.country}</dd></div>
+              <div><dt className="font-semibold text-primary">Nhà sản xuất</dt><dd>{productLabelInformation.manufacturer}</dd></div>
+              <div><dt className="font-semibold text-primary">Đơn vị phân phối theo công bố của hãng</dt><dd>{productLabelInformation.responsibleDistributor}</dd></div>
+              <div><dt className="font-semibold text-primary">Hạn sử dụng</dt><dd>{productLabelInformation.expiry}</dd><dd className="mt-1">{productLabelInformation.afterOpening}</dd></div>
+              <div><dt className="font-semibold text-primary">Bảo quản và lưu ý</dt><dd>{productLabelInformation.storage}</dd><dd className="mt-1">{productLabelInformation.precautions}</dd></div>
+            </dl>
+          </section>
+        )}
         <div className="border-b border-outline-variant/40">
           <details className="group py-6 cursor-pointer" open>
             <summary className="flex justify-between items-center font-serif text-lg text-primary list-none font-medium">
@@ -434,7 +449,7 @@ export default function ProductDetail() {
         <div className="border-b border-outline-variant/40">
           <details className="group py-6 cursor-pointer">
             <summary className="flex justify-between items-center font-serif text-lg text-primary list-none font-medium">
-              Thành phần hoạt chất
+              Thành phần đầy đủ
               <span className="group-open:rotate-180 transition-transform duration-300">⌄</span>
             </summary>
             <div className="pt-4 font-sans text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-line break-words">
@@ -481,7 +496,7 @@ export default function ProductDetail() {
       {isSet && (
         <section className="bg-surface-container-low py-16 md:py-24">
           <div className="max-w-[700px] w-full mx-auto text-center px-4">
-            <span className="font-sans text-[10px] uppercase tracking-widest text-secondary font-semibold mb-4 block">Royal Skincare Synergy</span>
+            <span className="font-sans text-[10px] uppercase tracking-widest text-secondary font-semibold mb-4 block">CHĂM SÓC DA ĐỒNG BỘ</span>
             <h3 className="font-serif text-2xl md:text-3xl text-primary mb-6">Sự Tương Thích Hoàn Hảo</h3>
             <p className="font-sans text-base text-on-surface-variant leading-relaxed mb-8">
               {getSynergyText()}
@@ -509,7 +524,7 @@ export default function ProductDetail() {
                   />
                 </div>
                 <div className="text-center">
-                  <span className="font-sans text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 block">{item.type}</span>
+                  <span className="font-sans text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 block">{productTypeLabel(item.type)}</span>
                   <h4 className="font-serif text-base text-primary mb-2 font-medium group-hover:text-secondary transition-colors duration-300">{item.name}</h4>
                   <p className="font-sans text-xs text-outline font-semibold uppercase tracking-wider">Khám phá</p>
                 </div>

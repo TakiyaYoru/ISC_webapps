@@ -36,7 +36,7 @@ export default function Stores() {
             <div key={store.name} className="border border-outline-variant p-8 bg-surface-container-lowest">
               <h2 className="font-headline-md text-headline-md text-primary mb-3">{store.name}</h2>
               <p className="font-body-md text-body-md text-on-surface-variant">{store.address}</p>
-              <p className="font-body-md text-body-md text-on-surface-variant">Hotline: {store.phone}</p>
+              <p className="font-body-md text-body-md text-on-surface-variant">Điện thoại: {store.phone}</p>
               <p className="font-body-md text-body-md text-on-surface-variant">Giờ mở cửa: {store.hours}</p>
             </div>
           ))}

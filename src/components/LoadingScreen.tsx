@@ -17,7 +17,7 @@ export default function LoadingScreen() {
       >
         <img
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtx8Tj9XFuAIxxbtQt-WlTECXBYosGkV8OLe3IMXa8nzKZCX1R7QQbkEHHve47qjgI4v7EBwbO5Ju2-DjaO3-fswugkJ2ZJGb21N_xBaUEHPe4hIi0Ms8N5c8oOCIvCxnxsqNYWA8-eD_uUEc6ffyzybONx-bvsI2EJL01PNz5Yx_mqGM2jC-wVdfWto3e6wTJFa_HSSt9ZAcxrmeS1eXkW23ik5Nl-ROAVCjuBC_CAYq79cNwDxSWs51LHqoKJ9CZyNSCCWtn0SU"
-          alt="IMPERIAL SKINCARE Logo"
+          alt="Biểu trưng IMPERIAL Skin Care"
           className="w-full h-auto object-contain"
         />
       </motion.div>

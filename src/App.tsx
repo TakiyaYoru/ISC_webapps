@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
 import Home from './pages/Home'
 import ComingSoon from './pages/ComingSoon'
@@ -8,13 +8,12 @@ import Journal from './pages/Journal'
 import JournalArticle from './pages/JournalArticle'
 import About from './pages/About'
 import Faq from './pages/Faq'
-import PolicyPrivacy from './pages/PolicyPrivacy'
-import PolicyReturns from './pages/PolicyReturns'
 import PolicyPurchaseGuide from './pages/PolicyPurchaseGuide'
-import PolicyTerms from './pages/PolicyTerms'
 import PolicyPricing from './pages/PolicyPricing'
+import PolicyPage from './pages/PolicyPage'
+import { policies } from './data/policies'
 import Contact from './pages/Contact'
-import MockGateway from './pages/MockGateway'
+import BankTransfer from './pages/BankTransfer'
 import OrderSuccess from './pages/OrderSuccess'
 import Account from './pages/Account'
 import AdminDashboard from './pages/AdminDashboard'
@@ -27,9 +26,10 @@ export default function App() {
     <UserProvider>
       <CartProvider>
         <Routes>
-          <Route path="/payment/gateway" element={<MockGateway />} />
+          <Route path="/payment/gateway" element={<Navigate to="/policy/payment" replace />} />
           <Route path="/imperial-admin" element={<AdminDashboard />} />
           <Route element={<MainLayout />}>
+            <Route path="/payment/bank-transfer" element={<BankTransfer />} />
             <Route path="/" element={<Home />} />
             <Route path="/collection" element={<Collection />} />
             <Route path="/brand" element={<Collection />} />
@@ -44,10 +44,10 @@ export default function App() {
             <Route path="/about" element={<About page="imperial" />} />
             <Route path="/bespoke" element={<ComingSoon />} />
             <Route path="/faq" element={<Faq />} />
-            <Route path="/policy/privacy" element={<PolicyPrivacy />} />
-            <Route path="/policy/returns" element={<PolicyReturns />} />
+            {policies.map(policy => (
+              <Route key={policy.slug} path={`/policy/${policy.slug}`} element={<PolicyPage slug={policy.slug} />} />
+            ))}
             <Route path="/policy/purchase-guide" element={<PolicyPurchaseGuide />} />
-            <Route path="/policy/terms" element={<PolicyTerms />} />
             <Route path="/policy/pricing" element={<PolicyPricing />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/order-success" element={<OrderSuccess />} />

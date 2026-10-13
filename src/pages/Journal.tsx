@@ -61,7 +61,7 @@ export default function Journal() {
           <nav className="flex text-sm text-on-surface-variant mb-12 font-body-md">
             <Link className="hover:text-primary transition-colors" to="/">Trang chủ</Link>
             <span className="mx-2">/</span>
-            <span className="text-primary font-medium">Blog</span>
+            <span className="text-primary font-medium">Bài viết</span>
           </nav>
         </Reveal>
 
@@ -78,7 +78,7 @@ export default function Journal() {
             <header className="max-w-3xl mb-16">
               <Reveal>
                 <p className="label-caps text-secondary mb-3 tracking-[0.2em] font-semibold">
-                  THE JOURNAL
+                  KIẾN THỨC CHĂM SÓC DA
                 </p>
               </Reveal>
               <Reveal delay={0.1}>

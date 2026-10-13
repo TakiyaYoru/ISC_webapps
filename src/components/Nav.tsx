@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
-import { useUser } from '../context/UserContext'
+import { useCart } from '../context/cartState'
+import { useUser } from '../context/userState'
 
 const navLinks = [
   {
@@ -12,7 +12,7 @@ const navLinks = [
       { to: '/collection?cat=my-pham-tre-hoa', label: 'Mỹ phẩm trẻ hoá' },
       { to: '/collection?cat=chong-lao-hoa', label: 'Chống lão hoá' },
       { to: '/collection?cat=kem-chong-nang', label: 'Kem chống nắng' },
-      { to: '/collection?cat=essence', label: 'Essence' },
+      { to: '/collection?cat=essence', label: 'Tinh chất' },
       { to: '/collection?cat=kem-duong-da', label: 'Kem Dưỡng Da' },
     ],
   },
@@ -22,10 +22,10 @@ const navLinks = [
     withChevron: true,
     children: [
       { to: '/brand?name=le-laffe', label: 'Le Laffé' },
-      { to: '/brand?name=shoo', label: 'Shoo (upcoming)' },
+      { to: '/brand?name=shoo', label: 'Shoo (Sắp ra mắt)' },
     ],
   },
-  { to: '/journal', label: 'Blog' },
+  { to: '/journal', label: 'Bài viết' },
   {
     to: '/about/imperial',
     label: 'Về chúng tôi',
@@ -38,18 +38,17 @@ const navLinks = [
 ]
 
 export default function Nav() {
+  const { pathname } = useLocation()
+  return <Navigation key={pathname} />
+}
+
+function Navigation() {
   const [open, setOpen] = useState(false)
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
   const [shake, setShake] = useState(false)
-  const { pathname } = useLocation()
   const { cartCount, setCartOpen } = useCart()
   const navigate = useNavigate()
   const { user, setLoginModalOpen } = useUser()
-
-  useEffect(() => {
-    setOpen(false)
-    setExpandedIndex(null)
-  }, [pathname])
 
   useEffect(() => {
     const handleCartAdded = () => {
@@ -79,7 +78,7 @@ export default function Nav() {
           <div className="flex items-center justify-between">
             {/* Logo Left */}
             <div className="flex-1 flex justify-start">
-              <Link to="/" aria-label="IMPERIAL Skin Care home" className="flex items-center">
+              <Link to="/" aria-label="Trang chủ IMPERIAL Skin Care" className="flex items-center">
                 <img
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtx8Tj9XFuAIxxbtQt-WlTECXBYosGkV8OLe3IMXa8nzKZCX1R7QQbkEHHve47qjgI4v7EBwbO5Ju2-DjaO3-fswugkJ2ZJGb21N_xBaUEHPe4hIi0Ms8N5c8oOCIvCxnxsqNYWA8-eD_uUEc6ffyzybONx-bvsI2EJL01PNz5Yx_mqGM2jC-wVdfWto3e6wTJFa_HSSt9ZAcxrmeS1eXkW23ik5Nl-ROAVCjuBC_CAYq79cNwDxSWs51LHqoKJ9CZyNSCCWtn0SU"
                   alt="IMPERIAL SKINCARE"
@@ -135,7 +134,7 @@ export default function Nav() {
 
             {/* Icons Right */}
             <div className="flex items-center justify-end gap-4 md:gap-5 flex-1 text-ink/80">
-              <button aria-label="Search" className="hover:text-primary transition-colors p-1">
+              <button aria-label="Tìm kiếm" className="hover:text-primary transition-colors p-1">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="7" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -144,7 +143,7 @@ export default function Nav() {
               
               <button
                 onClick={() => setCartOpen(true)}
-                aria-label="Cart"
+                aria-label="Giỏ hàng"
                 className={`hover:text-primary transition-colors relative p-1 ${shake ? 'animate-shake' : ''}`}
                 id="header-cart-icon"
               >
@@ -167,7 +166,7 @@ export default function Nav() {
                     setLoginModalOpen(true)
                   }
                 }}
-                aria-label="Account"
+                aria-label="Tài khoản"
                 className="hover:text-primary transition-colors relative p-1"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -183,7 +182,7 @@ export default function Nav() {
               <button
                 onClick={() => setOpen(true)}
                 className="md:hidden flex flex-col gap-1.5 p-1 text-ink"
-                aria-label="Open Menu"
+                aria-label="Mở danh mục"
               >
                 <span className="h-0.5 w-6 bg-ink" />
                 <span className="h-0.5 w-6 bg-ink" />
@@ -224,7 +223,7 @@ export default function Nav() {
             <button
               onClick={() => setOpen(false)}
               className="w-10 h-10 flex items-center justify-center text-primary text-xl"
-              aria-label="Close menu"
+              aria-label="Đóng danh mục"
             >
               ✕
             </button>
@@ -331,7 +330,7 @@ export default function Nav() {
             <div className="font-sans text-[11px] text-on-surface-variant/70 leading-relaxed text-center">
               <p className="font-medium text-primary">IMPERIAL SKIN CARE</p>
               <p className="mt-1">Dưỡng Da Y Khoa Hoàng Gia Seoul</p>
-              <p className="mt-0.5">Hotline: 1900 xxxx (8:00 - 21:00)</p>
+              <p className="mt-0.5">Điện thoại: 0869 733 288</p>
             </div>
           </div>
         </div>

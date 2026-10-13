@@ -3,34 +3,34 @@ import { motion } from 'framer-motion'
 
 const labels: Record<string, { label: string; sub: string; detail: string }> = {
   '/collection': {
-    label: 'The Collection',
-    sub: 'Compositions, not products.',
+    label: 'Bộ sưu tập',
+    sub: 'Những sản phẩm chăm sóc da được chọn lọc.',
     detail:
-      'Our signed library is being photographed in-atelier and catalogued for a quiet release in the coming weeks.',
+      'Bộ sưu tập đang được hoàn thiện hình ảnh và thông tin để giới thiệu trong thời gian tới.',
   },
   '/rituals': {
-    label: 'The Rituals',
-    sub: 'Composed routines.',
+    label: 'Quy trình chăm sóc da',
+    sub: 'Chăm sóc da theo từng bước.',
     detail:
-      'The Morning, Evening, and Weekly compositions are being recorded with our scientists. Correspondence will follow.',
+      'Các quy trình chăm sóc buổi sáng, buổi tối và hằng tuần đang được hoàn thiện.',
   },
   '/journal': {
-    label: 'The Journal',
-    sub: 'Essays from the laboratory.',
+    label: 'Bài viết',
+    sub: 'Kiến thức về chăm sóc da.',
     detail:
-      'Our first three essays are in the final edit. Please return — or join the atelier to receive them first.',
+      'Các bài viết đang được biên tập. Vui lòng quay lại để xem nội dung mới.',
   },
   '/about': {
-    label: 'The Atelier',
-    sub: 'A house of quiet precision.',
+    label: 'Về IMPERIAL',
+    sub: 'Chăm sóc da với sự tận tâm và chính xác.',
     detail:
-      'The story of IMPERIAL Beauty Clinic and its consumer house is being written with the care it deserves.',
+      'Thông tin giới thiệu IMPERIAL Beauty Clinic và IMPERIAL Skin Care đang được hoàn thiện.',
   },
   '/bespoke': {
-    label: 'Bespoke Consultation',
-    sub: 'A ritual composed only for you.',
+    label: 'Tư vấn riêng',
+    sub: 'Quy trình chăm sóc dành riêng cho bạn.',
     detail:
-      'Our concierge booking channel opens at launch. For early access, please join the atelier below.',
+      'Dịch vụ đặt lịch tư vấn đang được chuẩn bị. Quý khách có thể liên hệ để được hỗ trợ.',
   },
 }
 
@@ -38,10 +38,10 @@ function resolveLabel(pathname: string) {
   const base = '/' + (pathname.split('/')[1] ?? '')
   return (
     labels[base] ?? {
-      label: 'In Preparation',
-      sub: 'A chapter, composed slowly.',
+      label: 'Đang chuẩn bị',
+      sub: 'Nội dung đang được hoàn thiện.',
       detail:
-        'This page is being quietly prepared. Please return, or join the atelier to be the first to know.',
+        'Trang này đang được hoàn thiện. Quý khách vui lòng quay lại sau hoặc liên hệ để được hỗ trợ.',
     }
   )
 }
@@ -69,7 +69,7 @@ export default function ComingSoon() {
             transition={{ duration: 0.8 }}
             className="label-caps text-ink/50 mb-8"
           >
-            {label} · In preparation
+            {label} · Đang chuẩn bị
           </motion.p>
 
           <motion.h1
@@ -78,8 +78,8 @@ export default function ComingSoon() {
             transition={{ duration: 1.2, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="font-serif text-display-lg md:text-display-xl leading-[0.98] tracking-tighter text-balance"
           >
-            Composed slowly.<br />
-            <span className="italic font-light text-primary">Arriving shortly.</span>
+            Chăm chút từng bước.<br />
+            <span className="italic font-light text-primary">Sắp ra mắt.</span>
           </motion.h1>
 
           <motion.p
@@ -107,11 +107,11 @@ export default function ComingSoon() {
             className="mt-14 flex flex-wrap items-center gap-5"
           >
             <Link to="/" className="btn-primary">
-              Return to the Home
+              Trở về trang chủ
             </Link>
-            <a href="#atelier-join" className="btn-underline">
-              Join the atelier →
-            </a>
+            <Link to="/contact" className="btn-underline">
+              Liên hệ tư vấn →
+            </Link>
           </motion.div>
         </div>
 
@@ -143,8 +143,8 @@ export default function ComingSoon() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <p className="font-serif italic text-lg mt-8">Composed at the atelier</p>
-              <p className="label-caps mt-4 text-bone/70">Paris · Est. MMXXV</p>
+              <p className="font-serif italic text-lg mt-8">Chăm sóc da cùng IMPERIAL</p>
+              <p className="label-caps mt-4 text-bone/70">IMPERIAL Skin Care</p>
             </div>
           </motion.div>
         </div>

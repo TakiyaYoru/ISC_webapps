@@ -27,7 +27,7 @@ export default function JournalArticle() {
             title: data.title,
             excerpt: data.excerpt,
             category: data.category,
-            readingTime: data.readingTime || '5 min',
+            readingTime: data.readingTime || '5 phút',
             image: data.image,
             imageAlt: data.imageAlt || data.title,
             date: data.date,
@@ -35,7 +35,7 @@ export default function JournalArticle() {
           }
           setArticle(mapped)
 
-          // Load other articles for "Continue reading"
+          // Load other articles for "Đọc thêm bài viết"
           const allArticles = await api.journal.getAll()
           if (active) {
             const filtered = allArticles
@@ -47,7 +47,7 @@ export default function JournalArticle() {
                 title: dbArt.title,
                 excerpt: dbArt.excerpt,
                 category: dbArt.category,
-                readingTime: dbArt.readingTime || '5 min',
+                readingTime: dbArt.readingTime || '5 phút',
                 image: dbArt.image,
                 imageAlt: dbArt.imageAlt || dbArt.title,
                 date: dbArt.date,
@@ -84,9 +84,9 @@ export default function JournalArticle() {
   if (!article) {
     return (
       <div className="container-editorial pt-40 pb-32 text-center">
-        <p className="label-caps text-ink/50 mb-4">Not found</p>
-        <h1 className="font-serif text-display-md tracking-tight">This essay has been filed away.</h1>
-        <Link to="/journal" className="btn-underline mt-10">Return to the journal</Link>
+        <p className="label-caps text-ink/50 mb-4">Không tìm thấy</p>
+        <h1 className="font-serif text-display-md tracking-tight">Bài viết không tồn tại hoặc đang được cập nhật.</h1>
+        <Link to="/journal" className="btn-underline mt-10">Trở về danh sách bài viết</Link>
       </div>
     )
   }
@@ -139,7 +139,7 @@ export default function JournalArticle() {
           <Reveal>
             <div className="divider-tonal my-14" />
             <p className="text-center font-serif italic text-ink/55">
-              — Written in the IMPERIAL atelier, Paris
+              — Bài viết từ IMPERIAL Skin Care
             </p>
           </Reveal>
         </div>
@@ -150,7 +150,7 @@ export default function JournalArticle() {
           <div className="container-wide">
             <Reveal>
               <h2 className="font-serif text-display-md leading-[1.08] tracking-tight mb-16">
-                Continue reading
+                Đọc thêm bài viết
               </h2>
             </Reveal>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">

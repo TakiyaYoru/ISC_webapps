@@ -1,0 +1,3 @@
+# A public gallery of published media, with the Instagram token kept in Edge Function secrets.
+[functions.instagram-feed]
+verify_jwt = false

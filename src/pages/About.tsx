@@ -10,31 +10,31 @@ type Props = {
 const pageData = {
   imperial: {
     label: 'IMPERIAL SKIN CARE',
-    titleEn: 'ABOUT THE ATELIER',
+    titleEn: 'GIỚI THIỆU IMPERIAL',
     titleVi: 'Về chúng tôi',
     subTitle: 'IMPERIAL Skin Care',
     desc: '',
     breadcrumbText: 'Giới thiệu',
   },
   brands: {
-    label: 'BRAND SYSTEM',
-    titleEn: 'EXCLUSIVE COOPERATION',
+    label: 'HỆ THỐNG THƯƠNG HIỆU',
+    titleEn: 'HỢP TÁC ĐỘC QUYỀN',
     titleVi: 'Hệ thống thương hiệu',
-    subTitle: 'IMPERIAL Brand Ecosystem',
+    subTitle: 'Hệ sinh thái thương hiệu IMPERIAL',
     desc: '',
     breadcrumbText: 'Hệ thống thương hiệu',
   },
   stores: {
-    label: 'STORE NETWORK',
-    titleEn: 'CLINICAL LOUNGES',
+    label: 'HỆ THỐNG CỬA HÀNG',
+    titleEn: 'KHÔNG GIAN TƯ VẤN',
     titleVi: 'Hệ thống cửa hàng',
-    subTitle: 'Đang đồng bộ thông tin showroom & clinic.',
-    desc: 'Danh sách các showroom, lounge tư vấn và chi nhánh phòng khám trong hệ thống cửa hàng IMPERIAL đang được đồng bộ thông tin và cập nhật chỉ dẫn định vị chính xác nhất.',
+    subTitle: 'Đang đồng bộ thông tin phòng trưng bày và phòng khám.',
+    desc: 'Danh sách các phòng trưng bày, khu vực tư vấn và chi nhánh phòng khám trong hệ thống cửa hàng IMPERIAL đang được đồng bộ thông tin và cập nhật chỉ dẫn định vị chính xác nhất.',
     breadcrumbText: 'Hệ thống cửa hàng',
   },
   experience: {
-    label: 'CUSTOMER CARE',
-    titleEn: 'MEMBERSHIP & EXPERIENCE',
+    label: 'CHĂM SÓC KHÁCH HÀNG',
+    titleEn: 'THÀNH VIÊN VÀ TRẢI NGHIỆM',
     titleVi: 'Trải nghiệm khách hàng',
     subTitle: 'Đang thiết lập chương trình đặc quyền thành viên.',
     desc: 'Chương trình đặc quyền thành viên, hệ thống tích lũy điểm và các dịch vụ chăm sóc khách hàng chuyên biệt đang được thiết lập để mang lại trải nghiệm hoàn hảo nhất cho quý khách.',
@@ -120,7 +120,7 @@ const BrandLogo = ({ logos, initials, title, color }: { logos?: string[]; initia
           >
             <img
               src={logoUrl}
-              alt={`${title} logo ${index + 1}`}
+              alt={`Biểu trưng ${title} ${index + 1}`}
               className="max-h-full max-w-full object-contain mix-blend-multiply"
             />
           </div>
@@ -321,7 +321,7 @@ export default function About({ page = 'imperial' }: Props) {
                     </div>
                   </div>
                   <div className="p-4 bg-surface-container-low border border-outline-variant/30 rounded text-left">
-                    <p className="font-sans text-xs uppercase tracking-wider text-secondary font-semibold text-center sm:text-left">Showroom Trụ Sở Chính</p>
+                    <p className="font-sans text-xs uppercase tracking-wider text-secondary font-semibold text-center sm:text-left">Phòng trưng bày tại trụ sở chính</p>
                     <p className="font-sans text-sm font-semibold text-primary mt-1 text-center sm:text-left">
                       Số 1 Lý Tự Trọng, Phường Sài Gòn, Thành phố Hồ Chí Minh
                     </p>
@@ -373,7 +373,7 @@ export default function About({ page = 'imperial' }: Props) {
           <Reveal delay={0.25}>
             <h1 className="font-serif text-display-md md:text-display-lg leading-[1.1] tracking-tighter text-primary mb-6">
               Hệ thống thương hiệu <br />
-              <span className="italic font-light text-secondary">IMPERIAL Ecosystem</span>
+              <span className="italic font-light text-secondary">Hệ sinh thái IMPERIAL</span>
             </h1>
           </Reveal>
           <Reveal delay={0.4}>

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api'
-import { useCart } from '../context/CartContext'
+import { useCart } from '../context/cartState'
 import LoadingScreen from '../components/LoadingScreen'
+import InstagramGallery from '../components/InstagramGallery'
+import { productTypeLabel } from '../utils/productLabels'
 
 const heroImages = [
   'https://poueqhpkzkqruxakkqvp.supabase.co/storage/v1/object/public/Le%20Laffe/Hero%20Header/Hero_001.png',
@@ -37,7 +39,7 @@ const blogArticlesDefault = [
 export default function Home() {
   const { addToCart } = useCart()
   const [articles, setArticles] = useState(blogArticlesDefault)
-  const [bestSellers, setBestSellers] = useState<any[]>([])
+  const [bestSellers, setBestSellers] = useState<{ slug: string; brand: string; name: string; subtitle: string; price: string; image: string }[]>([])
   const [currentHero, setCurrentHero] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -74,7 +76,7 @@ export default function Home() {
             slug: p.slug,
             brand: 'LE LAFFÉ',
             name: p.name,
-            subtitle: p.type,
+            subtitle: productTypeLabel(p.type),
             price: p.price,
             image: p.images[0],
           }))
@@ -86,8 +88,7 @@ export default function Home() {
     }
     async function init() {
       setIsLoading(true)
-      const minDelay = new Promise((resolve) => setTimeout(resolve, 1000))
-      await Promise.all([loadHomeData(), minDelay])
+      await loadHomeData()
       if (active) setIsLoading(false)
     }
     init()
@@ -111,77 +112,6 @@ export default function Home() {
       setCurrentHero((prev) => (prev + 1) % heroImages.length)
     }, 4000)
     return () => clearInterval(interval)
-  }, [])
-
-  // Elfsight setup
-  useEffect(() => {
-    const scriptSrc = 'https://elfsightcdn.com/platform.js'
-    if (document.querySelector(`script[src="${scriptSrc}"]`)) return
-
-    const script = document.createElement('script')
-    script.src = scriptSrc
-    script.async = true
-    document.body.appendChild(script)
-  }, [])
-
-  // Elfsight watermark remover style setup
-  useEffect(() => {
-    const styleText = `
-      a[href*="elfsight"],
-      [class*="eapps-link"],
-      [class*="watermark"] {
-        display: none !important;
-        opacity: 0 !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        pointer-events: none !important;
-      }
-    `
-
-    const hideWatermark = () => {
-      const widgets = document.querySelectorAll('[class*="elfsight-app"]')
-      widgets.forEach((widget) => {
-        if (widget.shadowRoot) {
-          if (!widget.shadowRoot.querySelector('#hide-elfsight-style')) {
-            const style = document.createElement('style')
-            style.id = 'hide-elfsight-style'
-            style.textContent = styleText
-            widget.shadowRoot.appendChild(style)
-          }
-        }
-        widget.querySelectorAll('*').forEach((child) => {
-          if (child.shadowRoot) {
-            if (!child.shadowRoot.querySelector('#hide-elfsight-style')) {
-              const style = document.createElement('style')
-              style.id = 'hide-elfsight-style'
-              style.textContent = styleText
-              child.shadowRoot.appendChild(style)
-            }
-          }
-        })
-      })
-    }
-
-    hideWatermark()
-
-    const observer = new MutationObserver(() => {
-      hideWatermark()
-    })
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    })
-
-    const interval = setInterval(hideWatermark, 1000)
-
-    return () => {
-      observer.disconnect()
-      clearInterval(interval)
-    }
   }, [])
 
   // Handle product scroll progress line & boundaries
@@ -221,7 +151,7 @@ export default function Home() {
           style={{ transform: `translateX(-${currentHero * 100}%)` }}
         >
           {heroImages.map((src, index) => (
-            <img key={src} alt={`Imperial Skin Care Banner ${index + 1}`} className="w-full h-auto object-cover flex-shrink-0" src={src} />
+            <img key={src} alt={`Ảnh giới thiệu IMPERIAL Skin Care ${index + 1}`} className="w-full h-auto object-cover flex-shrink-0" src={src} />
           ))}
         </div>
       </section>
@@ -250,7 +180,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 relative">
             {/* Left aligned title */}
             <div className="lg:col-span-4 flex flex-col justify-center items-start text-left">
-              <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-secondary font-semibold mb-3">BEST SELLERS</span>
+              <span className="font-sans text-[10px] uppercase tracking-[0.25em] text-secondary font-semibold mb-3">SẢN PHẨM BÁN CHẠY</span>
               <h2 className="font-serif text-3xl md:text-4xl text-primary mb-6 leading-tight">Sản phẩm nổi bật</h2>
               <p className="font-sans text-sm text-on-surface-variant/80 leading-relaxed mb-8 max-w-sm">
                 Khám phá những công thức chăm sóc da bán chạy nhất, được hàng triệu khách hàng tin dùng để đánh thức nét thanh xuân tươi trẻ của làn da.
@@ -271,7 +201,7 @@ export default function Home() {
                 className={`absolute left-2 top-[140px] -translate-y-1/2 z-10 w-9 h-14 bg-surface/90 border border-outline-variant/60 text-primary hidden lg:flex items-center justify-center transition-all duration-300 hover:bg-secondary hover:text-white rounded shadow-sm ${
                   canScrollLeft ? 'opacity-100' : 'opacity-30 pointer-events-none'
                 }`}
-                aria-label="Previous product"
+                aria-label="Sản phẩm trước"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
@@ -284,7 +214,7 @@ export default function Home() {
                 className={`absolute right-2 top-[140px] -translate-y-1/2 z-10 w-9 h-14 bg-surface/90 border border-outline-variant/60 text-primary hidden lg:flex items-center justify-center transition-all duration-300 hover:bg-secondary hover:text-white rounded shadow-sm ${
                   canScrollRight ? 'opacity-100' : 'opacity-30 pointer-events-none'
                 }`}
-                aria-label="Next product"
+                aria-label="Sản phẩm tiếp theo"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
@@ -385,37 +315,14 @@ export default function Home() {
         />
       </section>
 
-      {/* 5. Instagram Section (Old layout) */}
-      <section className="py-16 border-t border-secondary/20 bg-surface">
-        <div className="container-wide">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-            <h2 className="font-serif text-primary text-[32px] md:text-[40px] italic">@imperialskincare</h2>
-            <a
-              className="px-6 py-3.5 border border-outline-variant hover:border-primary transition-colors flex items-center gap-2 font-sans text-xs tracking-widest text-primary bg-white font-semibold rounded"
-              href="https://www.instagram.com/imperialskincare/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              THEO DÕI INSTAGRAM IMPERIAL SKINCARE
-            </a>
-          </div>
-
-          <div className="relative w-full overflow-hidden pb-10">
-            <div className="elfsight-app-11d76882-8cf7-4750-9293-fe8b97970904" data-elfsight-app-lazy />
-            <div
-              className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-12 bg-surface"
-              aria-hidden="true"
-            />
-          </div>
-        </div>
-      </section>
+      <InstagramGallery />
 
       {/* 6. Blog / Journal Section (Old layout) */}
       <section className="py-16 bg-surface border-t border-secondary/20">
         <div className="container-wide">
           <div className="text-center mb-16">
-            <span className="font-sans text-xs text-secondary mb-4 block tracking-widest uppercase font-semibold">JOURNAL</span>
-            <h2 className="font-serif text-2xl md:text-3xl text-primary font-medium">Blog chăm sóc da</h2>
+            <span className="font-sans text-xs text-secondary mb-4 block tracking-widest uppercase font-semibold">KIẾN THỨC CHĂM SÓC DA</span>
+            <h2 className="font-serif text-2xl md:text-3xl text-primary font-medium">Bài viết chăm sóc da</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {articles.map((article) => (

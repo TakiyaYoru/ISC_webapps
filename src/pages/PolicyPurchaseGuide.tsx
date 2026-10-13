@@ -23,7 +23,7 @@ const highlights = [
   },
   {
     title: 'Thanh toán linh hoạt',
-    description: 'Hỗ trợ COD, chuyển khoản ngân hàng và thanh toán thẻ.',
+    description: 'Hỗ trợ thanh toán khi nhận hàng (COD) và chuyển khoản vào tài khoản công ty.',
     icon: (
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary mb-6">
         <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />

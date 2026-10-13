@@ -1,27 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
-
-export type CartItem = {
-  slug: string
-  name: string
-  type: string
-  price: string // Format: "7.000.000 VNĐ" or "7.000.000"
-  image: string
-  quantity: number
-}
-
-type CartContextType = {
-  cartItems: CartItem[]
-  cartOpen: boolean
-  setCartOpen: (open: boolean) => void
-  addToCart: (product: Omit<CartItem, 'quantity'>, quantity?: number) => void
-  removeFromCart: (slug: string) => void
-  updateQuantity: (slug: string, quantity: number) => void
-  clearCart: () => void
-  cartCount: number
-  cartTotal: number
-}
-
-const CartContext = createContext<CartContextType | undefined>(undefined)
+import { useState, useEffect, useCallback, type ReactNode } from 'react'
+import { CartContext, type CartItem } from './cartState'
 
 const parsePriceNumber = (priceStr: string): number => {
   return Number(priceStr.replace(/[^0-9]/g, '')) || 0
@@ -75,6 +53,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = useCallback(() => {
     setCartItems([])
   }, [])
+  const refreshPrices = useCallback((products: { slug: string; price: string }[]) => {
+    setCartItems(prev => prev.map(item => {
+      const product = products.find(p => p.slug === item.slug)
+      return product ? { ...item, price: product.price } : item
+    }))
+  }, [])
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0)
   const cartTotal = cartItems.reduce((acc, item) => acc + parsePriceNumber(item.price) * item.quantity, 0)
@@ -89,6 +73,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeFromCart,
         updateQuantity,
         clearCart,
+        refreshPrices,
         cartCount,
         cartTotal,
       }}
@@ -98,10 +83,3 @@ export function CartProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useCart() {
-  const context = useContext(CartContext)
-  if (!context) {
-    throw new Error('useCart must be used within a CartProvider')
-  }
-  return context
-}

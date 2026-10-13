@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
+import CompanyInformation from './CompanyInformation'
+import { policies } from '../data/policies'
 
 export default function Footer() {
   return (
     <footer className="bg-surface border-t border-outline-variant mt-auto">
       <div className="container-wide py-20">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
           <div className="flex flex-col gap-4">
             <img
               alt="IMPERIAL"
@@ -15,27 +17,16 @@ export default function Footer() {
               IMPERIAL Skin Care, được thành lập bởi Công Ty Cổ Phần Imperial Care, là nền tảng phân phối mỹ phẩm trẻ hóa
               và chống lão hóa cao cấp tại Việt Nam.
             </p>
-            <div className="mt-4 flex flex-col gap-2 text-sm text-on-surface-variant">
-              <p>Địa chỉ: Số 1 Lý Tự Trọng, Phường Sài Gòn, Thành phố Hồ Chí Minh</p>
-              <p>Hotline: 0869 733 288</p>
-              <p>Email: info.imperialskincare@gmail.com</p>
-            </div>
+            <CompanyInformation />
           </div>
 
           <div className="flex flex-col gap-3">
             <span className="label-caps text-secondary">Chính sách</span>
-            <Link to="/policy/purchase-guide" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
-              Hướng dẫn mua hàng
-            </Link>
-            <Link to="/policy/returns" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
-              Chính sách đổi trả
-            </Link>
-            <Link to="/policy/privacy" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
-              Chính sách bảo mật
-            </Link>
-            <Link to="/policy/terms" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
-              Điều khoản dịch vụ
-            </Link>
+            {policies.map(policy => (
+              <Link key={policy.slug} to={`/policy/${policy.slug}`} className="text-sm text-on-surface-variant hover:text-primary transition-colors">
+                {policy.title}
+              </Link>
+            ))}
             <Link to="/policy/pricing" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
               Quy định về giá cả
             </Link>
@@ -43,6 +34,9 @@ export default function Footer() {
 
           <div className="flex flex-col gap-3">
             <span className="label-caps text-secondary">Chăm sóc khách hàng</span>
+            <Link to="/policy/purchase-guide" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
+              Hướng dẫn mua hàng
+            </Link>
             <Link to="/faq" className="text-sm text-on-surface-variant hover:text-primary transition-colors">
               Hỏi đáp
             </Link>
@@ -83,9 +77,9 @@ export default function Footer() {
         <div className="divider-tonal mt-12" />
         <div className="pt-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between text-[0.7rem] uppercase tracking-[0.2em] text-ink/50">
           <p>© {new Date().getFullYear()} Imperial Skin Care.</p>
-          <div className="flex gap-8">
-            <Link to="/policy/privacy">Privacy</Link>
-            <Link to="/policy/terms">Terms</Link>
+          <div className="flex flex-wrap gap-4 md:gap-8">
+            <Link to="/policy/privacy">Bảo mật</Link>
+            <Link to="/policy/terms">Quy định chung</Link>
           </div>
         </div>
       </div>

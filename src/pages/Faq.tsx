@@ -32,7 +32,7 @@ const sections: FaqSection[] = [
         id: 'dat-hang-1',
         question: 'Tôi có thể thanh toán bằng những hình thức nào?',
         answer:
-          'Chúng tôi chấp nhận chuyển khoản ngân hàng, thanh toán qua cổng VNPay, thẻ tín dụng (Visa/Mastercard) và hình thức thanh toán khi nhận hàng (COD) cho một số khu vực nhất định.',
+          'Website hỗ trợ chuyển khoản vào tài khoản Vietcombank của CÔNG TY CỔ PHẦN IMPERIAL CARE và thanh toán khi nhận hàng (COD). Khi chọn chuyển khoản, quý khách nhận mã QR, số tiền theo đơn và nội dung chuyển khoản. Công ty xác nhận thanh toán sau khi kiểm tra giao dịch.',
       },
     ],
   },
@@ -154,8 +154,8 @@ export default function Faq() {
                 <Link to="/contact" className="btn-ghost">Liên hệ IMPERIAL</Link>
               </div>
               <div className="font-body-md text-body-md text-on-surface-variant space-y-2">
-                <p>Hotline: <a className="text-primary hover:underline" href="tel:0869733288">0869 733 288</a></p>
-                <p>Email: <a className="text-primary hover:underline" href="mailto:info.imperialskincare@gmail.com">info.imperialskincare@gmail.com</a></p>
+                <p>Điện thoại: <a className="text-primary hover:underline" href="tel:0869733288">0869 733 288</a></p>
+                <p>Thư điện tử: <a className="text-primary hover:underline" href="mailto:info.imperialskincare@gmail.com">info.imperialskincare@gmail.com</a></p>
               </div>
             </div>
           </div>

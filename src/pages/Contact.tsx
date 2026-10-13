@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api'
+import CompanyInformation from '../components/CompanyInformation'
 
 export default function Contact() {
   const [name, setName] = useState('')
@@ -8,39 +9,28 @@ export default function Contact() {
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name || !email || !message) return
     setIsSubmitting(true)
 
-    // Save to localStorage for Admin Dashboard demo persistence
-    const savedInquiries = localStorage.getItem('imperial_skincare_inquiries')
-    const inquiries = savedInquiries ? JSON.parse(savedInquiries) : []
-    const newInquiry = {
-      id: `INQ-${Math.floor(100000 + Math.random() * 900000)}`,
-      name,
-      email,
-      message,
-      date: new Date().toISOString(),
-      status: 'new'
-    }
-    localStorage.setItem('imperial_skincare_inquiries', JSON.stringify([newInquiry, ...inquiries]))
-
+    setError('')
     try {
       await api.contact.submit({
         name,
         email,
         message,
       })
-    } catch (err) {
-      console.error('Error submitting contact form:', err)
-    } finally {
-      setIsSubmitting(false)
       setSuccess(true)
       setName('')
       setEmail('')
       setMessage('')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Chưa gửi được liên hệ. Vui lòng thử lại.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -60,11 +50,7 @@ export default function Contact() {
           <p className="font-body-lg text-body-lg text-on-surface-variant mb-6">
             Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ. Hãy liên hệ để được tư vấn chuyên sâu hoặc hỗ trợ đơn hàng.
           </p>
-          <div className="space-y-3 font-body-md text-body-md text-on-surface-variant">
-            <p>Địa chỉ: Số 1 Lý Tự Trọng, Phường Sài Gòn, Thành phố Hồ Chí Minh</p>
-            <p>Hotline: 0869 733 288</p>
-            <p>Email: info.imperialskincare@gmail.com</p>
-          </div>
+          <CompanyInformation />
         </div>
         <div className="border border-outline-variant p-8 bg-surface-container-lowest">
           {success ? (
@@ -99,6 +85,7 @@ export default function Contact() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <h2 className="font-headline-md text-headline-md text-primary mb-4">Gửi yêu cầu</h2>
+              {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
               <input
                 required
                 value={name}
@@ -112,7 +99,7 @@ export default function Contact() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-outline-variant/60 px-4 py-3 bg-transparent text-body-md focus:outline-none focus:border-primary"
-                placeholder="Email"
+                placeholder="Thư điện tử"
               />
               <textarea
                 required

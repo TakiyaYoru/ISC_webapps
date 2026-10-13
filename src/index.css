@@ -131,16 +131,6 @@
   will-change: transform;
 }
 
-/* Elfsight watermark blocker */
-a[href*="elfsight"],
-[class*="eapps-link"],
-[class*="watermark"] {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
 @keyframes shake {
   0%, 100% { transform: rotate(0deg) scale(1); }
   15%, 45%, 75% { transform: rotate(-12deg) scale(1.15); }

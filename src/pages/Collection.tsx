@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { api } from '../services/api'
+import { productTypeLabel } from '../utils/productLabels'
 
 // Fallback hardcoded data in case API connection fails
 const FALLBACK_PRODUCTS = [
@@ -164,18 +165,19 @@ export default function Collection() {
           {typeOptions.map((label) => {
             const checked = selectedTypes.includes(label)
             return (
-              <li key={label} className="flex items-center group">
+              <li key={productTypeLabel(label)} className="flex items-center group">
                 <label className="flex items-center cursor-pointer select-none w-full">
                   <span className={`w-4 h-4 border mr-3 flex items-center justify-center transition-colors ${checked ? 'border-secondary bg-secondary/10' : 'border-outline group-hover:border-secondary'}`}>
                     <span className={`text-[12px] text-secondary transition-opacity ${checked ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'}`}>✓</span>
                   </span>
                   <input
                     type="checkbox"
+                    aria-label={productTypeLabel(label)}
                     className="sr-only"
                     checked={checked}
                     onChange={() => toggleType(label)}
                   />
-                  <span className="group-hover:text-primary transition-colors">{label}</span>
+                  <span className="group-hover:text-primary transition-colors">{productTypeLabel(label)}</span>
                 </label>
               </li>
             )
@@ -261,15 +263,15 @@ export default function Collection() {
                   Le Laffé
                 </h1>
                 <p className="font-sans text-base md:text-lg text-on-surface-variant mb-4 leading-relaxed">
-                  A minimalist approach to high-performance skincare, Le Laffé represents the zenith of bio-cellular research. Utilizing the proprietary Cellular Secretome technology and the unparalleled Platinum StemCell solution, we deliver targeted, transformative results for discerning skin.
+                  Le Laffé theo đuổi phương pháp chăm sóc da tinh giản, kết hợp nghiên cứu sinh học tế bào với các công thức chuyên sâu. Công nghệ Cellular Secretome và giải pháp Platinum StemCell được ứng dụng trong các sản phẩm chăm sóc phù hợp với từng nhu cầu của làn da.
                 </p>
                 <p className="font-sans text-sm text-on-surface-variant leading-relaxed">
-                  Embrace the quiet luxury of profound cellular renewal. Each formulation is a testament to scientific precision and editorial elegance, designed to awaken your skin's inherent vitality.
+                  Mỗi công thức được chăm chút từ thành phần đến kết cấu, mang đến trải nghiệm dưỡng da tinh tế và hỗ trợ duy trì vẻ khỏe mạnh, rạng rỡ tự nhiên.
                 </p>
               </div>
               <div className="mt-8 lg:mt-0 relative aspect-[4/3] bg-surface-container-low rounded-lg overflow-hidden border border-outline-variant/30 group">
                 <img
-                  alt="Le Laffé Brand Image"
+                  alt="Hình ảnh thương hiệu Le Laffé"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFJUTjvw_4bqgnV6gCQjw3wAxWEcp8a3QdeyvjwFS9m-bAWWnEqeOL5SHHr_jrTpAULYQsD_RoXf6FD_nYAmlgkQidOmyLWhycrpwVFosyysSAbV3dUQ0T8VGY-e0mOaM_aR_082eyYZA-vQ9PRlI4Nv_PTaKLGJ99C0ifc0ZKYMOvbsyRjbo0ODokUVYFEZrfKPQeqcPE-qASZz53x66lYgT8q_GMmYO3BYXt3sNQ-TUzqERHJrVVROchThwxFH1zRlVs4kWIdyI"
                 />
@@ -351,7 +353,7 @@ export default function Collection() {
                       <div className="flex flex-col flex-grow text-center">
                         <span className="font-sans text-[8px] md:text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 md:mb-2">Le Laffé</span>
                         <h2 className="font-serif text-sm md:text-lg leading-snug md:leading-tight text-primary mb-1 md:mb-2 flex-grow line-clamp-2 min-h-[36px] md:min-h-[48px]">{product.name}</h2>
-                        <p className="text-[10px] md:text-xs text-on-surface-variant mb-2 md:mb-4">{product.type}</p>
+                        <p className="text-[10px] md:text-xs text-on-surface-variant mb-2 md:mb-4">{productTypeLabel(product.type)}</p>
                         <p className="font-sans text-xs md:text-sm text-secondary mb-4 md:mb-6 font-semibold">{product.price}</p>
                         <Link
                           to={`/product/${product.slug}`}
